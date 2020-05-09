@@ -5,6 +5,7 @@ import com.wojto.model.Transaction;
 import com.wojto.model.TransactionType;
 
 import java.math.BigDecimal;
+import java.time.LocalDateTime;
 
 public class GpwStockCalculator implements StockCalculator {
 
@@ -43,10 +44,22 @@ public class GpwStockCalculator implements StockCalculator {
     //TODO Add date of last transaction
     //TODO Sum up (with privisions)
 
-    public void printPerformanceOfStock() {
+    public void printAbsolutePerformanceOfStock() {
         System.out.printf(FORMAT, "Stock: ", stock.getStockName(),
                 "Status: ", stock.getStateOfPossesion(),
                 "Performance: ", colorInvestmentResault(stockPerformance.getInvestmenResault()));
+    }
+
+    public LocalDateTime getLastTransactionDate() {
+        LocalDateTime lastDate = LocalDateTime.MIN;
+        LocalDateTime dateToCheck;
+        LocalDateTime lastTransactionDate = null;
+        for (Transaction transaction : stock.getTransactions()) {
+            dateToCheck = transaction.getTransactionDate();
+            lastTransactionDate = dateToCheck.compareTo(lastDate) > 0 ? dateToCheck : lastDate;
+            lastDate = dateToCheck;
+        }
+        return lastTransactionDate;
     }
 
     public String colorInvestmentResault(BigDecimal investmentResault) {
