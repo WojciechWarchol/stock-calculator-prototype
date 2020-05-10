@@ -36,7 +36,7 @@ public class StockPortoflio {
 
     public void printPortfolioPerformance() {
         for (StockCalculator stockCalculator : stockCalculators) {
-            stockCalculator.calculateAbsolute();
+            stockCalculator.calculate();
             ((GpwStockCalculator) stockCalculator).printAbsolutePerformanceOfStock();
         }
     }

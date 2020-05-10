@@ -28,11 +28,10 @@ public class GpwStockCalculator implements StockCalculator {
     }
 
     @Override
-    public void calculateAbsolute() {
+    public void calculate() {
         // TODO Include provisions
         int quantityOwned = 0;
         BigDecimal presentValue = BigDecimal.ZERO;
-        // TODO use presentValue, and when quantityOwned == 0, add tu performance. On en this value -> Open positon
 
         for (Transaction transaction : stock.getTransactions()) {
             if(transaction.getTransactionType() == TransactionType.BUY) {
