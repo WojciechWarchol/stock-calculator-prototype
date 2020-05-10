@@ -2,6 +2,6 @@ package com.wojto.calculations;
 
 public interface StockCalculator {
 
-    public void calculate();
+    public void calculateAbsolute();
 
 }

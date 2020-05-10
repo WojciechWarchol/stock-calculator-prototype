@@ -28,15 +28,33 @@ public class GpwStockCalculator implements StockCalculator {
     }
 
     @Override
-    public void calculate() {
+    public void calculateAbsolute() {
         // TODO Include provisions
+        int quantityOwned = 0;
+        BigDecimal presentValue = BigDecimal.ZERO;
+        // TODO use presentValue, and when quantityOwned == 0, add tu performance. On en this value -> Open positon
+
         for (Transaction transaction : stock.getTransactions()) {
             if(transaction.getTransactionType() == TransactionType.BUY) {
-                stockPerformance.addPurcheseToPerformacne(transaction.getTotalValue());
+//                stockPerformance.addPucheseToOpenPosition(transaction.getTotalValue());
+                quantityOwned += transaction.getAmount();
+                presentValue = presentValue.add(transaction.getTotalValue());
             } else if(transaction.getTransactionType() == TransactionType.SELL) {
-                stockPerformance.addSaleToPerformance(transaction.getTotalValue());
+                quantityOwned -= transaction.getAmount();
+                if (quantityOwned < 0) {
+
+                } else if (quantityOwned == 0) {
+                    presentValue = presentValue.subtract(transaction.getTotalValue());
+                    stockPerformance.setInvestmenResault(presentValue.negate());
+                    presentValue = BigDecimal.ZERO;
+                } else {
+                    presentValue = presentValue.subtract(transaction.getTotalValue());
+                }
             }
         }
+
+        stockPerformance.setOpenPositionValue(presentValue);
+        stockPerformance.setOpenPositionAmount(quantityOwned);
     }
 
     //TODO Extract to seperate class, seperate Lacked, Opened and Closed Transactions.

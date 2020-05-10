@@ -6,6 +6,8 @@ import java.util.Objects;
 public class StockPerformance implements Comparable<StockPerformance> {
 
     private String stockSymbol;
+    private BigDecimal openPositionValue = new BigDecimal("0");
+    private int openPositionAmount = 0;
     private BigDecimal investmenResault = new BigDecimal("0");
     // TODO Sum up provisions
 
@@ -27,6 +29,22 @@ public class StockPerformance implements Comparable<StockPerformance> {
         this.stockSymbol = stockSymbol;
     }
 
+    public BigDecimal getOpenPositionValue() {
+        return openPositionValue;
+    }
+
+    public void setOpenPositionValue(BigDecimal openPositionValue) {
+        this.openPositionValue = openPositionValue;
+    }
+
+    public int getOpenPositionAmount() {
+        return openPositionAmount;
+    }
+
+    public void setOpenPositionAmount(int openPositionAmount) {
+        this.openPositionAmount = openPositionAmount;
+    }
+
     public BigDecimal getInvestmenResault() {
         return investmenResault;
     }
@@ -35,13 +53,17 @@ public class StockPerformance implements Comparable<StockPerformance> {
         this.investmenResault = investmenResault;
     }
 
-    public void addPurcheseToPerformacne(BigDecimal amount) {
-        investmenResault = investmenResault.subtract(amount);
-    }
+//    public void addPucheseToOpenPosition(BigDecimal amount) { openPositionValue = openPositionValue.add(amount); }
 
-    public void addSaleToPerformance(BigDecimal amount) {
-        investmenResault = investmenResault.add(amount);
-    }
+//    public void clearOpenPosition() {openPositionValue = BigDecimal.ZERO;}
+
+//    public void addPurcheseToPerformacne(BigDecimal amount) {
+//        investmenResault = investmenResault.subtract(amount);
+//    }
+//
+//    public void addSaleToPerformance(BigDecimal amount) {
+//        investmenResault = investmenResault.add(amount);
+//    }
 
     @Override
     public boolean equals(Object o) {
