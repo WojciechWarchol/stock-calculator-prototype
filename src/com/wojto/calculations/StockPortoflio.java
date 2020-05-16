@@ -3,6 +3,7 @@ package com.wojto.calculations;
 import com.wojto.model.StateOfPossesion;
 import com.wojto.model.Stock;
 import com.wojto.model.Transaction;
+import com.wojto.output.consolePrinting.StockPerformancePrinter;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -35,10 +36,10 @@ public class StockPortoflio {
 
     public void printPortfolioPerformance() {
         StockPerformance currentStockPerformance = new StockPerformance();
-        StockPerformancePrinter currentStockPerformancePrinter = new StockPerformancePrinter();
+        GpwStockCalculator gpwStockCalculator = new GpwStockCalculator();
         for (Stock stock : stockList) {
-            currentStockPerformance = GpwStockCalculator.calculate(stock);
-            currentStockPerformancePrinter.printAbsolutePerformanceOfStock(currentStockPerformance);
+            currentStockPerformance = gpwStockCalculator.calculate(stock);
+            StockPerformancePrinter.printAbsolutePerformanceOfStock(stock, currentStockPerformance);
         }
     }
 

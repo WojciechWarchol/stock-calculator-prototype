@@ -9,11 +9,6 @@ import java.time.LocalDateTime;
 
 public class GpwStockCalculator implements StockCalculator {
 
-    public static final String ANSI_RESET = "\u001B[0m";
-    public static final String ANSI_RED = "\u001B[31m";
-    public static final String ANSI_GREEN = "\u001B[32m";
-    public static final String FORMAT = "%s%-15s%s%-16s%s%10s%n";
-
     public GpwStockCalculator() {}
 
     @Override
@@ -50,22 +45,5 @@ public class GpwStockCalculator implements StockCalculator {
     //TODO Sort by performance
     //TODO Add date of last transaction
     //TODO Sum up (with privisions)
-
-    public void printAbsolutePerformanceOfStock() {
-        System.out.printf(FORMAT, "Stock: ", stock.getStockName(),
-                "Status: ", stock.getStateOfPossesion(),
-                "Performance: ", colorInvestmentResault(stockPerformance.getInvestmenResault()));
-    }
-
-    public String colorInvestmentResault(BigDecimal investmentResault) {
-        String coloredResault = String.format("%10s", investmentResault);
-        if (investmentResault.compareTo(BigDecimal.ZERO) > 0) {
-            coloredResault = ANSI_GREEN + coloredResault + ANSI_RESET;
-        } else {
-            coloredResault = ANSI_RED + coloredResault + ANSI_RESET;
-        }
-        return coloredResault;
-    }
-
 
 }
