@@ -1,5 +1,6 @@
 package com.wojto.model;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -78,5 +79,17 @@ public class Stock {
         } else {
             return StateOfPossesion.LACKS_PURCHESE;
         }
+    }
+
+    public LocalDateTime getLastTransactionDate() {
+        LocalDateTime lastDate = LocalDateTime.MIN;
+        LocalDateTime dateToCheck;
+        LocalDateTime lastTransactionDate = null;
+        for (Transaction transaction : transactions) {
+            dateToCheck = transaction.getTransactionDate();
+            lastTransactionDate = dateToCheck.compareTo(lastDate) > 0 ? dateToCheck : lastDate;
+            lastDate = dateToCheck;
+        }
+        return lastTransactionDate;
     }
 }
