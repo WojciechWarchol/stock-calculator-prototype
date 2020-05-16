@@ -1,7 +1,9 @@
 package com.wojto.calculations;
 
+import com.wojto.model.Stock;
+
 public interface StockCalculator {
 
-    public void calculate();
+    public StockPerformance calculate(Stock stock);
 
 }
