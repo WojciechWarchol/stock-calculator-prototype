@@ -36,11 +36,14 @@ public class StockPortoflio {
 
     public void printPortfolioPerformance() {
         StockPerformance currentStockPerformance = new StockPerformance();
+        PortfolioPerformance currentPortfolioPerformance = new PortfolioPerformance();
         GpwStockCalculator gpwStockCalculator = new GpwStockCalculator();
         for (Stock stock : stockList) {
             currentStockPerformance = gpwStockCalculator.calculate(stock);
             StockPerformancePrinter.printAbsolutePerformanceOfStock(stock, currentStockPerformance);
         }
+        currentPortfolioPerformance = gpwStockCalculator.calculatePortfolioPerformance(this);
+        StockPerformancePrinter.printPortfolioResault(currentPortfolioPerformance);
     }
 
     private void sortStocksByStatusAndPerformance() {

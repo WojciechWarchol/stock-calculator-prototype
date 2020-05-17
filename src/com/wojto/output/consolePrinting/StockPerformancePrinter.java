@@ -1,5 +1,6 @@
 package com.wojto.output.consolePrinting;
 
+import com.wojto.calculations.PortfolioPerformance;
 import com.wojto.calculations.StockPerformance;
 import com.wojto.model.StateOfPossesion;
 import com.wojto.model.Stock;
@@ -22,6 +23,7 @@ public class StockPerformancePrinter {
 
     public static final String FORMAT_OPEN =   "%s%s%s%s%s%s%22s%s%24s%s%n";
     public static final String FORMAT_CLOSED = "%s%s%s%-16s%s%s%n";
+    public static final String FORMAT_PORTFOLIO_RESAULT = "%-59s%-30s%n";
 
     public static void printAbsolutePerformanceOfStock(Stock stock, StockPerformance stockPerformance) {
         StateOfPossesion stateOfThisStock = stock.getStateOfPossesion();
@@ -46,6 +48,12 @@ public class StockPerformancePrinter {
                     colorInvestmentResault(stockPerformance.getInvestmenResault())
             );
         }
+    }
+
+    public static void printPortfolioResault(PortfolioPerformance portfolioPerformance) {
+        System.out.printf(FORMAT_PORTFOLIO_RESAULT,
+                "Portfollio performance: ",
+                colorInvestmentResault(portfolioPerformance.getPortfolioResault()));
     }
 
     private static String colorInvestmentResault(BigDecimal investmentResault) {

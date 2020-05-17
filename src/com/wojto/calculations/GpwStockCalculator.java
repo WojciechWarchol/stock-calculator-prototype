@@ -41,6 +41,19 @@ public class GpwStockCalculator implements StockCalculator {
         return stockPerformance;
     }
 
+    @Override
+    public PortfolioPerformance calculatePortfolioPerformance(StockPortoflio stockPortoflio) {
+        PortfolioPerformance portfolioPerformance = new PortfolioPerformance();
+        StockPerformance stockPerformance = new StockPerformance();
+
+        for (Stock stock : stockPortoflio.getStockList()) {
+            stockPerformance = calculate(stock);
+            portfolioPerformance.updatePortfolioResault(stockPerformance.getInvestmenResault());
+        }
+
+        return portfolioPerformance;
+    }
+
     //TODO Extract to seperate class, seperate Lacked, Opened and Closed Transactions.
     //TODO Sort by performance
     //TODO Add date of last transaction

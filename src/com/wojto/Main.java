@@ -13,6 +13,6 @@ public class Main {
         File file = new File("C:\\Projects\\private\\stock-calculator-prototype\\resources\\eMAKLER_historia_transakcji.Csv");
         StockPortoflio portoflio = new CsvFileTransactionParser().createStockPortfolio(file);
         portoflio.printPortfolioPerformance();
-
+        //TODO Sum of the whole portfolio
     }
 }
