@@ -10,7 +10,6 @@ public class Stock {
     private List<Transaction> transactions = new ArrayList<>();
     private StateOfPossesion stateOfPossesion;
 
-
     public Stock(String stockName, List<Transaction> transactions, StateOfPossesion stateOfPossesion) {
         this.stockName = stockName;
         this.transactions = transactions;

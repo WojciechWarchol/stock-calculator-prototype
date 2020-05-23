@@ -11,6 +11,8 @@ public class CsvFileImporter implements Importer {
 
     private static final String STOCK_TRANSACTION_REGEXP = "[0-9: \\.]+;[\\w]+;[\\w-]+;[K|S]{1};[\\d ]+;[\\d ,]+;[\\w]+;[\\d ,]+;[\\w]+";
 
+    //TODO Logically this class should be using the Transaction parser, not the other way around
+
     @Override
     public List<String> importTransactionsFromFile(File file) {
         List<String> transactionStrings = new ArrayList<>();

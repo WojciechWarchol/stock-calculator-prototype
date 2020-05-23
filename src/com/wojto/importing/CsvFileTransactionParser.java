@@ -1,7 +1,5 @@
 package com.wojto.importing;
 
-import com.wojto.calculations.GpwStockCalculator;
-import com.wojto.calculations.StockCalculator;
 import com.wojto.calculations.StockPortoflio;
 import com.wojto.model.Transaction;
 import com.wojto.model.TransactionType;
@@ -10,7 +8,6 @@ import java.io.File;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
 import java.util.List;
 
 public class CsvFileTransactionParser implements TransactionParser {
@@ -32,7 +29,7 @@ public class CsvFileTransactionParser implements TransactionParser {
         return stockPortfolio;
     }
 
-    private Transaction createTransactionFromString(String transactionString) {
+    public Transaction createTransactionFromString(String transactionString) {
         String[] transactionArguments = splitTransactionString(transactionString);
         Transaction transaction = new Transaction(
                 createLocalDateTimeFromString(transactionArguments[0]),
