@@ -10,7 +10,7 @@ public class Main {
 
     public static void main(String[] args) {
 
-        File file = new File("C:\\Projects\\private\\stock-calculator-prototype\\resources\\eMAKLER_historia_transakcji.Csv");
+        File file = new File("C:\\Projects\\private\\stock-calculator-prototype\\resources\\Tests\\Test_Transactions.Csv");
         StockPortoflio portoflio = new CsvFileTransactionParser().createStockPortfolio(file);
         portoflio.printPortfolioPerformance();
         //TODO Sum of the whole portfolio
