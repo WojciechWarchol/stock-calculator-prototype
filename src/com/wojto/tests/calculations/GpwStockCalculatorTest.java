@@ -1,7 +1,9 @@
 package com.wojto.tests.calculations;
 
 import com.wojto.calculations.GpwStockCalculator;
+import com.wojto.calculations.PortfolioPerformance;
 import com.wojto.calculations.StockPerformance;
+import com.wojto.calculations.StockPortoflio;
 import com.wojto.importing.CsvFileImporter;
 import com.wojto.importing.CsvFileTransactionParser;
 import com.wojto.model.Stock;
@@ -29,6 +31,7 @@ class GpwStockCalculatorTest {
     static protected Stock LACKS1 = new Stock("LACKS1");
     static protected Stock LACKS2 = new Stock("LACKS2");
     static protected Stock LASTDATE1 = new Stock("LASTDATE1");
+    static protected StockPortoflio PORTFOLIO = new StockPortoflio();
 
     @BeforeAll
     static void setUp() {
@@ -49,6 +52,7 @@ class GpwStockCalculatorTest {
             LACKS1.addTransaction(transaction);
             LACKS2.addTransaction(transaction);
             LASTDATE1.addTransaction(transaction);
+            PORTFOLIO.addTransaction(transaction);
         }
     }
 
@@ -88,15 +92,17 @@ class GpwStockCalculatorTest {
         assertEquals(new BigDecimal("-100.00"), performanceOfOPEN3.getInvestmenResault());
 
         assertEquals(new BigDecimal("0"), performanceOfLACKS1.getOpenPositionValue());
-        assertEquals(-100, performanceOfLACKS1.getOpenPositionAmount());
-        assertEquals(new BigDecimal("0"), performanceOfLACKS1.getInvestmenResault());
+        assertEquals(0, performanceOfLACKS1.getOpenPositionAmount());
+        assertEquals(new BigDecimal("0.00"), performanceOfLACKS1.getInvestmenResault());
 
         assertEquals(new BigDecimal("0"), performanceOfLACKS2.getOpenPositionValue());
         assertEquals(0, performanceOfLACKS2.getOpenPositionAmount());
-        assertEquals(new BigDecimal("100.00"), performanceOfLACKS2.getInvestmenResault());
+        assertEquals(new BigDecimal("0.00"), performanceOfLACKS2.getInvestmenResault());
     }
 
     @Test
     void calculatePortfolioPerformance() {
+        PortfolioPerformance performance = calculator.calculatePortfolioPerformance(PORTFOLIO);
+        assertEquals(new BigDecimal("-260.80"), performance.getPortfolioResault());
     }
 }

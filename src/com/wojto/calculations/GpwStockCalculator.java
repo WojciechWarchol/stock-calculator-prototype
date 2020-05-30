@@ -25,7 +25,12 @@ public class GpwStockCalculator implements StockCalculator {
             } else if(transaction.getTransactionType() == TransactionType.SELL) {
                 quantityOwned -= transaction.getAmount();
                 if (quantityOwned < 0) {
-
+                    Long quantityForCalculation = transaction.getAmount() + quantityOwned;
+                    BigDecimal partialValue = new BigDecimal(quantityForCalculation.toString()).multiply(transaction.getPrice());
+                    presentValue = presentValue.subtract(partialValue);
+                    stockPerformance.updateInvestmentResault(presentValue.negate());
+                    presentValue = BigDecimal.ZERO;
+                    quantityOwned = 0;
                 } else if (quantityOwned == 0) {
                     presentValue = presentValue.subtract(transaction.getTotalValue());
                     stockPerformance.updateInvestmentResault(presentValue.negate());

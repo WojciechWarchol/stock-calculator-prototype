@@ -34,6 +34,8 @@ public class StockPortoflio {
         }
     }
 
+    //TODO Add Stock method
+
     public void printPortfolioPerformance() {
         StockPerformance currentStockPerformance = new StockPerformance();
         PortfolioPerformance currentPortfolioPerformance = new PortfolioPerformance();
