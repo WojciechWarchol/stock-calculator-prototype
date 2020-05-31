@@ -35,7 +35,7 @@ class GpwStockCalculatorTest {
 
     @BeforeAll
     static void setUp() {
-        File file = new File("C:\\Projects\\private\\stock-calculator-prototype\\resources\\Tests\\Test_Transactions.Csv");
+        File file = new File(".\\resources\\Tests\\Test_Transactions_Calculator.Csv");
         CsvFileImporter fileImporter = new CsvFileImporter();
         CsvFileTransactionParser transactionParser = new CsvFileTransactionParser();
         List<String> transactionStringList = fileImporter.importTransactionsFromFile(file);

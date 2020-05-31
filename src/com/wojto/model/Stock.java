@@ -3,6 +3,7 @@ package com.wojto.model;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 public class Stock {
 
@@ -90,5 +91,20 @@ public class Stock {
             lastDate = dateToCheck;
         }
         return lastTransactionDate;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Stock stock = (Stock) o;
+        return Objects.equals(stockName, stock.stockName) &&
+                Objects.equals(transactions, stock.transactions) &&
+                stateOfPossesion == stock.stateOfPossesion;
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(stockName, transactions, stateOfPossesion);
     }
 }
