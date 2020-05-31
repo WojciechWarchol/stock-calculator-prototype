@@ -9,6 +9,7 @@ public class StockPerformance implements Comparable<StockPerformance> {
     private BigDecimal openPositionValue = new BigDecimal("0");
     private int openPositionAmount = 0;
     private BigDecimal investmenResault = new BigDecimal("0");
+    private double earnedPercent = 0.00;
     // TODO Sum up provisions
 
 
@@ -57,6 +58,14 @@ public class StockPerformance implements Comparable<StockPerformance> {
 
     public void updateInvestmentResault(BigDecimal amount) {
         investmenResault = investmenResault.add(amount);
+    }
+
+    public double getEarnedPercent() {
+        return earnedPercent;
+    }
+
+    public void setEarnedPercent(double earnedPercent) {
+        this.earnedPercent = earnedPercent;
     }
 
     @Override

@@ -39,7 +39,7 @@ public class StockPerformancePrinter {
                     "Value on purchase: ",
                     colorInvestmentResault(stockPerformance.getOpenPositionValue())
             );
-        } else if (stateOfThisStock.equals(StateOfPossesion.CLOSED)) {
+        } else if (stateOfThisStock.equals(StateOfPossesion.CLOSED) || stateOfThisStock.equals(StateOfPossesion.LACKS_PURCHESE)) {
             System.out.printf(FORMAT_CLOSED, "Stock: ",
                     boldStockName(stock.getStockName()),
                     "Status: ",
