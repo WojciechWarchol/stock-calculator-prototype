@@ -10,6 +10,7 @@ public class Stock {
     private String stockName;
     private List<Transaction> transactions = new ArrayList<>();
     private StateOfPossesion stateOfPossesion;
+    // TODO Add provision
 
     public Stock(String stockName, List<Transaction> transactions, StateOfPossesion stateOfPossesion) {
         this.stockName = stockName;

@@ -12,7 +12,6 @@ public class Transaction implements Comparable<Transaction>{
     private long amount;
     private BigDecimal price;
     private BigDecimal totalValue;
-    // TODO Add provision
 
     // DECISION Market, currency of price and total, provision
 

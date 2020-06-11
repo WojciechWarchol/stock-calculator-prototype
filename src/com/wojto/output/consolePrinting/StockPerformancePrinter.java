@@ -22,7 +22,7 @@ public class StockPerformancePrinter {
 
 
     public static final String FORMAT_OPEN =   "%s%s%s%s%s%s%22s%s%24s%s%n";
-    public static final String FORMAT_CLOSED = "%s%s%s%-16s%s%s%n";
+    public static final String FORMAT_CLOSED = "%s%s%s%s%s%s%s%s%n";
     public static final String FORMAT_PORTFOLIO_RESAULT = "%-59s%-30s%n";
 
     public static void printAbsolutePerformanceOfStock(Stock stock, StockPerformance stockPerformance) {
@@ -45,7 +45,9 @@ public class StockPerformancePrinter {
                     "Status: ",
                     colorInvestmentStatus(stock.getStateOfPossesion()),
                     "Performance: ",
-                    colorInvestmentResault(stockPerformance.getInvestmenResault())
+                    colorInvestmentResault(stockPerformance.getInvestmenResault()),
+                    "  Percentage: ",
+                    colorInvestmentPercentage(stockPerformance.getEarnedPercent())
             );
         }
     }
@@ -59,6 +61,17 @@ public class StockPerformancePrinter {
     private static String colorInvestmentResault(BigDecimal investmentResault) {
         String coloredResault = String.format("%10s", investmentResault);
         if (investmentResault.compareTo(BigDecimal.ZERO) > 0) {
+            coloredResault = ANSI_GREEN + coloredResault + ANSI_RESET;
+        } else {
+            coloredResault = ANSI_RED + coloredResault + ANSI_RESET;
+        }
+        return coloredResault;
+    }
+
+    private static String colorInvestmentPercentage(double percentage) {
+        String formattedPercentage = String.format("%.2f", percentage);
+        String coloredResault = String.format("%7s", formattedPercentage);
+        if (percentage > 0) {
             coloredResault = ANSI_GREEN + coloredResault + ANSI_RESET;
         } else {
             coloredResault = ANSI_RED + coloredResault + ANSI_RESET;

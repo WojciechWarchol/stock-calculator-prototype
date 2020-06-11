@@ -12,6 +12,5 @@ public class Main {
         File file = new File(".\\resources\\Tests\\Test_Transactions_Calculator.Csv");
         StockPortoflio portoflio = new CsvFileTransactionParser().createStockPortfolio(file);
         portoflio.printPortfolioPerformance();
-        //TODO Sum of the whole portfolio
     }
 }
