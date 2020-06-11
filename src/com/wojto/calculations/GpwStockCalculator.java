@@ -1,12 +1,11 @@
 package com.wojto.calculations;
 
-import com.wojto.model.StateOfPossesion;
-import com.wojto.model.Stock;
-import com.wojto.model.Transaction;
-import com.wojto.model.TransactionType;
+import com.wojto.model.*;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
+import java.util.ArrayList;
+import java.util.List;
 
 public class GpwStockCalculator implements StockCalculator {
 
@@ -38,6 +37,38 @@ public class GpwStockCalculator implements StockCalculator {
                 }
             }
             stockPerformance.updateInvestmentResault(investmentResault);
+        } else if (isOpen(stock)) {
+            TransactionType transactionType;
+            List<Share> purchesedShares = new ArrayList<>();
+            List<Share> soldShares = new ArrayList<>();
+
+            for (Transaction transaction : stock.getTransactions()) {
+                transactionType = transaction.getTransactionType();
+                if (isPurcheseTransaction(transactionType)) {
+                    purchesedShares.addAll(Share.createSharesFromTransaction(transaction));
+                } else if (isSellTransaction(transactionType)) {
+                    soldShares.addAll(Share.createSharesFromTransaction(transaction));
+                }
+            }
+
+            // Calculating investment Resault from closed positons
+            BigDecimal investmentResault = BigDecimal.ZERO;
+            for (Share share : soldShares) {
+                closedPositionsBuyValue.add(purchesedShares.get(0).getPrice());
+                closedPositionsSellValue.add(share.getPrice());
+                investmentResault = investmentResault.add(share.subtractSharesValue(purchesedShares.get(0)));
+                purchesedShares.remove(0);
+            }
+
+            // Calculating open position
+            BigDecimal openPositionsValue = BigDecimal.ZERO;
+            for (Share share : purchesedShares) {
+                openPositionsValue = openPositionsValue.add(share.getPrice());
+            }
+
+            stockPerformance.updateInvestmentResault(investmentResault);
+            stockPerformance.setOpenPositionValue(openPositionsValue);
+            stockPerformance.setOpenPositionAmount(purchesedShares.size());
         }
 
 //        for (Transaction transaction : stock.getTransactions()) {
@@ -82,9 +113,11 @@ public class GpwStockCalculator implements StockCalculator {
         }
 
         stockPerformance.setEarnedPercent(earnedPercentage);
-        stockPerformance.setOpenPositionValue(presentValue);
-        stockPerformance.setOpenPositionAmount(quantityOwned);
         return stockPerformance;
+    }
+
+    private boolean isOpen(Stock stock) {
+        return stock.getStateOfPossesion() == StateOfPossesion.OPEN;
     }
 
     private boolean isSellTransaction(TransactionType transactionType) {

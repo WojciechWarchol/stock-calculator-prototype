@@ -80,6 +80,7 @@ public class Stock {
         } else {
             return StateOfPossesion.LACKS_PURCHESE;
         }
+        //TODO mark OPEN as LACKS if it has sells before first purchese
     }
 
     public LocalDateTime getLastTransactionDate() {

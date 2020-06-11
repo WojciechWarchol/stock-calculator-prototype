@@ -86,7 +86,7 @@ class GpwStockCalculatorTest {
         assertEquals(new BigDecimal("0"), performanceOfOPEN1.getInvestmenResault());
         assertEquals(0.0, performanceOfOPEN1.getEarnedPercent());
 
-        assertEquals(new BigDecimal("346.00"), performanceOfOPEN2.getOpenPositionValue());
+        assertEquals(new BigDecimal("410.00"), performanceOfOPEN2.getOpenPositionValue());
         assertEquals(200, performanceOfOPEN2.getOpenPositionAmount());
         //TODO No investment resault if position not closed...
         assertEquals(new BigDecimal("64.00"), performanceOfOPEN2.getInvestmenResault());
