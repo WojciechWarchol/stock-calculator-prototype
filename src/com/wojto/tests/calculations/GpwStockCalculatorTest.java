@@ -62,6 +62,7 @@ class GpwStockCalculatorTest {
 
     @Test
     void calculate() {
+        //TODO Change to parameterized tests
         StockPerformance performanceOfCLSDPROF1 = calculator.calculate(CLSDPROF1);
         StockPerformance performanceOfCLSDLOSS1 = calculator.calculate(CLSDLOSS1);
         StockPerformance performanceOfOPEN1 = calculator.calculate(OPEN1);
@@ -88,7 +89,7 @@ class GpwStockCalculatorTest {
         assertEquals(new BigDecimal("346.00"), performanceOfOPEN2.getOpenPositionValue());
         assertEquals(200, performanceOfOPEN2.getOpenPositionAmount());
         //TODO No investment resault if position not closed...
-        assertEquals(new BigDecimal("0"), performanceOfOPEN2.getInvestmenResault());
+        assertEquals(new BigDecimal("64.00"), performanceOfOPEN2.getInvestmenResault());
 //        assertEquals(3.33, performanceOfOPEN2.getEarnedPercent());
 
         assertEquals(new BigDecimal("1100.00"), performanceOfOPEN3.getOpenPositionValue());
