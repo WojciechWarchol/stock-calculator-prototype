@@ -70,6 +70,10 @@ public class StockPerformance implements Comparable<StockPerformance> {
         this.lackingSellsValue = lackingSellsValue;
     }
 
+    public void updateLackingSellsValue(BigDecimal value) {
+        lackingSellsValue = lackingSellsValue.add(value);
+    }
+
     public double getEarnedPercent() {
         return earnedPercent;
     }

@@ -14,62 +14,107 @@ public class GpwStockCalculator implements StockCalculator {
     @Override
     public StockPerformance calculate(Stock stock) {
         // TODO Include provisions
-        int quantityOwned = 0;
         BigDecimal closedPositionsBuyValue = BigDecimal.ZERO;
         BigDecimal closedPositionsSellValue = BigDecimal.ZERO;
-        BigDecimal presentValue = BigDecimal.ZERO;
         StockPerformance stockPerformance = new StockPerformance();
 
-        if (isClosed(stock)) {
-            BigDecimal investmentResault = BigDecimal.ZERO;
-            BigDecimal transactionValue = BigDecimal.ZERO;
-            TransactionType transactionType;
+        TransactionType transactionType;
+        List<Share> ownedShares = new ArrayList<>();
 
-            for (Transaction transaction : stock.getTransactions()) {
-                transactionValue = transaction.getTotalValue();
-                transactionType = transaction.getTransactionType();
-                if (isPurcheseTransaction(transactionType)) {
-                    closedPositionsBuyValue = closedPositionsBuyValue.add(transactionValue);
-                    investmentResault = investmentResault.subtract(transactionValue);
-                } else if (isSellTransaction(transactionType)) {
-                    closedPositionsSellValue = closedPositionsSellValue.add(transactionValue);
-                    investmentResault = investmentResault.add(transactionValue);
+        for (Transaction transaction : stock.getTransactions()) {
+            transactionType = transaction.getTransactionType();
+            if (isPurcheseTransaction(transactionType)) {
+                ownedShares.addAll(Share.createSharesFromTransaction(transaction));
+            } else if (isSellTransaction(transactionType)) {
+                List<Share> tempListOfSoldShares = new ArrayList<>();
+                tempListOfSoldShares.addAll(Share.createSharesFromTransaction(transaction));
+                int currentlyProcessedSoldShare = 0;
+                BigDecimal sellResault = BigDecimal.ZERO;
+                try {
+                    while (currentlyProcessedSoldShare < tempListOfSoldShares.size()) {
+                        Share ownedShare = ownedShares.get(0);
+                        Share soldShare = tempListOfSoldShares.get(currentlyProcessedSoldShare);
+                        closedPositionsBuyValue = closedPositionsBuyValue.add(ownedShare.getPrice());
+                        closedPositionsSellValue = closedPositionsSellValue.add(soldShare.getPrice());
+                        sellResault = sellResault.subtract(ownedShare.getPrice().subtract(soldShare.getPrice()));
+                        ownedShares.remove(0);
+                        currentlyProcessedSoldShare++;
+                    }
+                } catch (IndexOutOfBoundsException e) {
+                    BigDecimal lackingSellValue = BigDecimal.ZERO;
+                    while (currentlyProcessedSoldShare < tempListOfSoldShares.size()) {
+                        Share lackingSoldShare = tempListOfSoldShares.get(currentlyProcessedSoldShare);
+                        lackingSellValue = lackingSellValue.add(lackingSoldShare.getPrice());
+                        currentlyProcessedSoldShare++;
+                    }
+                    stockPerformance.updateLackingSellsValue(lackingSellValue);
                 }
+                stockPerformance.updateInvestmentResault(sellResault);
             }
-            stockPerformance.updateInvestmentResault(investmentResault);
-        } else if (isOpen(stock)) {
-            TransactionType transactionType;
-            List<Share> purchesedShares = new ArrayList<>();
-            List<Share> soldShares = new ArrayList<>();
-
-            for (Transaction transaction : stock.getTransactions()) {
-                transactionType = transaction.getTransactionType();
-                if (isPurcheseTransaction(transactionType)) {
-                    purchesedShares.addAll(Share.createSharesFromTransaction(transaction));
-                } else if (isSellTransaction(transactionType)) {
-                    soldShares.addAll(Share.createSharesFromTransaction(transaction));
-                }
-            }
-
-            // Calculating investment Resault from closed positons
-            BigDecimal investmentResault = BigDecimal.ZERO;
-            for (Share share : soldShares) {
-                closedPositionsBuyValue.add(purchesedShares.get(0).getPrice());
-                closedPositionsSellValue.add(share.getPrice());
-                investmentResault = investmentResault.add(share.subtractSharesValue(purchesedShares.get(0)));
-                purchesedShares.remove(0);
-            }
-
-            // Calculating open position
-            BigDecimal openPositionsValue = BigDecimal.ZERO;
-            for (Share share : purchesedShares) {
-                openPositionsValue = openPositionsValue.add(share.getPrice());
-            }
-
-            stockPerformance.updateInvestmentResault(investmentResault);
-            stockPerformance.setOpenPositionValue(openPositionsValue);
-            stockPerformance.setOpenPositionAmount(purchesedShares.size());
         }
+
+        stockPerformance.setOpenPositionAmount(ownedShares.size());
+        BigDecimal valueOfOpenShares = BigDecimal.ZERO;
+        for (Share share : ownedShares) {
+            valueOfOpenShares = valueOfOpenShares.add(share.getPrice());
+        }
+        stockPerformance.setOpenPositionValue(valueOfOpenShares);
+
+
+        // WRONG
+//        if (isClosed(stock)) {
+//            BigDecimal investmentResault = BigDecimal.ZERO;
+//            BigDecimal transactionValue = BigDecimal.ZERO;
+//            TransactionType transactionType;
+//
+//            for (Transaction transaction : stock.getTransactions()) {
+//                transactionValue = transaction.getTotalValue();
+//                transactionType = transaction.getTransactionType();
+//                if (isPurcheseTransaction(transactionType)) {
+//                    ownedShares.addAll(Share.createSharesFromTransaction(transaction));
+//                    closedPositionsBuyValue = closedPositionsBuyValue.add(transactionValue);
+//                    investmentResault = investmentResault.subtract(transactionValue);
+//                } else if (isSellTransaction(transactionType)) {
+//                    closedPositionsSellValue = closedPositionsSellValue.add(transactionValue);
+//                    investmentResault = investmentResault.add(transactionValue);
+//                }
+//            }
+//            stockPerformance.updateInvestmentResault(investmentResault);
+//        } else if (isOpen(stock)) {
+//            TransactionType transactionType;
+//            List<Share> purchesedShares = new ArrayList<>();
+//            List<Share> soldShares = new ArrayList<>();
+//
+//            for (Transaction transaction : stock.getTransactions()) {
+//                transactionType = transaction.getTransactionType();
+//                if (isPurcheseTransaction(transactionType)) {
+//                    purchesedShares.addAll(Share.createSharesFromTransaction(transaction));
+//                } else if (isSellTransaction(transactionType)) {
+//                    soldShares.addAll(Share.createSharesFromTransaction(transaction));
+//                }
+//            }
+//
+//            // Calculating investment Resault from closed positons
+//            BigDecimal investmentResault = BigDecimal.ZERO;
+//            for (Share share : soldShares) {
+//                closedPositionsBuyValue.add(purchesedShares.get(0).getPrice());
+//                closedPositionsSellValue.add(share.getPrice());
+//                investmentResault = investmentResault.add(share.subtractSharesValue(purchesedShares.get(0)));
+//                purchesedShares.remove(0);
+//            }
+//
+//            // Calculating open position
+//            BigDecimal openPositionsValue = BigDecimal.ZERO;
+//            for (Share share : purchesedShares) {
+//                openPositionsValue = openPositionsValue.add(share.getPrice());
+//            }
+//
+//            stockPerformance.updateInvestmentResault(investmentResault);
+//            stockPerformance.setOpenPositionValue(openPositionsValue);
+//            stockPerformance.setOpenPositionAmount(purchesedShares.size());
+//        } else if (isLacking(stock)) {
+//
+//        }
 
 //        for (Transaction transaction : stock.getTransactions()) {
 //            if(transaction.getTransactionType() == TransactionType.BUY) {
@@ -114,6 +159,10 @@ public class GpwStockCalculator implements StockCalculator {
 
         stockPerformance.setEarnedPercent(earnedPercentage);
         return stockPerformance;
+    }
+
+    private boolean isLacking(Stock stock) {
+        return stock.getStateOfPossesion() == StateOfPossesion.LACKS_PURCHESE;
     }
 
     private boolean isOpen(Stock stock) {
