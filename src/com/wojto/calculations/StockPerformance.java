@@ -6,9 +6,11 @@ import java.util.Objects;
 public class StockPerformance implements Comparable<StockPerformance> {
 
     private String stockSymbol;
-    private BigDecimal openPositionValue = new BigDecimal("0");
+    private BigDecimal openPositionValue = BigDecimal.ZERO;
     private int openPositionAmount = 0;
-    private BigDecimal investmenResault = new BigDecimal("0");
+    private BigDecimal investmenResault = BigDecimal.ZERO;
+    private BigDecimal lackingSellsValue = BigDecimal.ZERO;
+
     private double earnedPercent = 0.00;
     // TODO Sum up provisions
 
@@ -58,6 +60,14 @@ public class StockPerformance implements Comparable<StockPerformance> {
 
     public void updateInvestmentResault(BigDecimal amount) {
         investmenResault = investmenResault.add(amount);
+    }
+
+    public BigDecimal getLackingSellsValue() {
+        return lackingSellsValue;
+    }
+
+    public void setLackingSellsValue(BigDecimal lackingSellsValue) {
+        this.lackingSellsValue = lackingSellsValue;
     }
 
     public double getEarnedPercent() {
