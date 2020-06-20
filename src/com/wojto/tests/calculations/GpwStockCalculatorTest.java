@@ -70,6 +70,7 @@ class GpwStockCalculatorTest {
         StockPerformance performanceOfOPEN3 = calculator.calculate(OPEN3);
         StockPerformance performanceOfLACKS1 = calculator.calculate(LACKS1);
         StockPerformance performanceOfLACKS2 = calculator.calculate(LACKS2);
+        StockPerformance performanceOfLASTDATE1 = calculator.calculate(LASTDATE1);
 
         assertEquals(new BigDecimal("0"), performanceOfCLSDPROF1.getOpenPositionValue());
         assertEquals(0, performanceOfCLSDPROF1.getOpenPositionAmount());
@@ -88,14 +89,13 @@ class GpwStockCalculatorTest {
 
         assertEquals(new BigDecimal("410.00"), performanceOfOPEN2.getOpenPositionValue());
         assertEquals(200, performanceOfOPEN2.getOpenPositionAmount());
-        //TODO No investment resault if position not closed...
         assertEquals(new BigDecimal("64.00"), performanceOfOPEN2.getInvestmenResault());
-//        assertEquals(3.33, performanceOfOPEN2.getEarnedPercent());
+        assertEquals(3.90, performanceOfOPEN2.getEarnedPercent());
 
         assertEquals(new BigDecimal("1100.00"), performanceOfOPEN3.getOpenPositionValue());
         assertEquals(110, performanceOfOPEN3.getOpenPositionAmount());
         assertEquals(new BigDecimal("-100.00"), performanceOfOPEN3.getInvestmenResault());
-//        assertEquals(3.33, performanceOfOPEN3.getEarnedPercent());
+        assertEquals(-10.00, performanceOfOPEN3.getEarnedPercent());
 
         assertEquals(new BigDecimal("0"), performanceOfLACKS1.getOpenPositionValue());
         assertEquals(0, performanceOfLACKS1.getOpenPositionAmount());
@@ -106,6 +106,11 @@ class GpwStockCalculatorTest {
         assertEquals(0, performanceOfLACKS2.getOpenPositionAmount());
         assertEquals(new BigDecimal("50.00"), performanceOfLACKS2.getInvestmenResault());
         assertEquals(5.0, performanceOfLACKS2.getEarnedPercent());
+
+        assertEquals(new BigDecimal("0"), performanceOfLASTDATE1.getOpenPositionValue());
+        assertEquals(0, performanceOfLASTDATE1.getOpenPositionAmount());
+        assertEquals(new BigDecimal("341.30"), performanceOfLASTDATE1.getInvestmenResault());
+        assertEquals(34.13, performanceOfLASTDATE1.getEarnedPercent());
     }
 
     @Test

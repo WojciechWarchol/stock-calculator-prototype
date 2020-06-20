@@ -60,7 +60,8 @@ public class GpwStockCalculator implements StockCalculator {
         }
         stockPerformance.setOpenPositionValue(valueOfOpenShares);
 
-        //TODO Change logic of summing transactions. Probably aggregate Transactions into POSITIONS. Sort transactions before adding.
+        //TODO Maybe aggregate Transactions into POSITIONS. Sort stock performance by date
+
         double earnedPercentage;
         if (closedPositionsSellValue.equals(BigDecimal.ZERO)) {
             earnedPercentage = 0.00;
