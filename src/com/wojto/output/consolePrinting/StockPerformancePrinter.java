@@ -21,9 +21,9 @@ public class StockPerformancePrinter {
     public static final String ANSI_WHITE = "\u001B[37m";
 
 
-    public static final String FORMAT_OPEN =   "%s%s%s%s%s%s%22s%s%24s%s%n";
+    public static final String FORMAT_OPEN =   "%s%s%s%s%s%s%s%s%s%s%s%s%n";
     public static final String FORMAT_CLOSED = "%s%s%s%s%s%s%s%s%n";
-    public static final String FORMAT_PORTFOLIO_RESAULT = "%-59s%-30s%n";
+    public static final String FORMAT_PORTFOLIO_RESULT = "%-59s%-30s%n";
 
     public static void printAbsolutePerformanceOfStock(Stock stock, StockPerformance stockPerformance) {
         StateOfPossesion stateOfThisStock = stock.getStateOfPossesion();
@@ -34,9 +34,11 @@ public class StockPerformancePrinter {
                     colorInvestmentStatus(stock.getStateOfPossesion()),
                     "Performance: ",
                     colorInvestmentResault(stockPerformance.getInvestmenResault()),
-                    "Currently owned: ",
+                    "  Percentage: ",
+                    colorInvestmentPercentage(stockPerformance.getEarnedPercent()),
+                    "  Currently owned: ",
                     colorOwnedStockAmmount(stockPerformance.getOpenPositionAmount()),
-                    "Value on purchase: ",
+                    "  Value on purchase: ",
                     colorInvestmentResault(stockPerformance.getOpenPositionValue())
             );
         } else if (stateOfThisStock.equals(StateOfPossesion.CLOSED) || stateOfThisStock.equals(StateOfPossesion.LACKS_PURCHESE)) {
@@ -52,8 +54,8 @@ public class StockPerformancePrinter {
         }
     }
 
-    public static void printPortfolioResault(PortfolioPerformance portfolioPerformance) {
-        System.out.printf(FORMAT_PORTFOLIO_RESAULT,
+    public static void printPortfolioResult(PortfolioPerformance portfolioPerformance) {
+        System.out.printf(FORMAT_PORTFOLIO_RESULT,
                 "Portfollio performance: ",
                 colorInvestmentResault(portfolioPerformance.getPortfolioResault()));
     }

@@ -9,7 +9,7 @@ public class Main {
 
     public static void main(String[] args) {
 
-        File file = new File(".\\resources\\Tests\\Test_Transactions_Calculator.Csv");
+        File file = new File(".\\resources\\eMAKLER_historia_transakcji.Csv");
         StockPortoflio portoflio = new CsvFileTransactionParser().createStockPortfolio(file);
         portoflio.printPortfolioPerformance();
     }

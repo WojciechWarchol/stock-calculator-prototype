@@ -99,7 +99,7 @@ class GpwStockCalculatorTest {
 
         assertEquals(new BigDecimal("0"), performanceOfLACKS1.getOpenPositionValue());
         assertEquals(0, performanceOfLACKS1.getOpenPositionAmount());
-        assertEquals(new BigDecimal("0.00"), performanceOfLACKS1.getInvestmenResault());
+        assertEquals(new BigDecimal("0"), performanceOfLACKS1.getInvestmenResault());
         assertEquals(0.0, performanceOfLACKS1.getEarnedPercent());
 
         assertEquals(new BigDecimal("0"), performanceOfLACKS2.getOpenPositionValue());
@@ -111,6 +111,7 @@ class GpwStockCalculatorTest {
     @Test
     void calculatePortfolioPerformance() {
         PortfolioPerformance performance = calculator.calculatePortfolioPerformance(PORTFOLIO);
-        assertEquals(new BigDecimal("130.50"), performance.getPortfolioResault());
+        assertEquals(new BigDecimal("194.50"), performance.getPortfolioResault());
+        assertEquals(new BigDecimal("2050.00"), performance.getLackingIncome());
     }
 }

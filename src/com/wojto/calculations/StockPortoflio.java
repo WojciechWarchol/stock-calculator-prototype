@@ -45,7 +45,7 @@ public class StockPortoflio {
             StockPerformancePrinter.printAbsolutePerformanceOfStock(stock, currentStockPerformance);
         }
         currentPortfolioPerformance = gpwStockCalculator.calculatePortfolioPerformance(this);
-        StockPerformancePrinter.printPortfolioResault(currentPortfolioPerformance);
+        StockPerformancePrinter.printPortfolioResult(currentPortfolioPerformance);
     }
 
     private void sortStocksByStatusAndPerformance() {

@@ -60,88 +60,6 @@ public class GpwStockCalculator implements StockCalculator {
         }
         stockPerformance.setOpenPositionValue(valueOfOpenShares);
 
-
-        // WRONG
-//        if (isClosed(stock)) {
-//            BigDecimal investmentResault = BigDecimal.ZERO;
-//            BigDecimal transactionValue = BigDecimal.ZERO;
-//            TransactionType transactionType;
-//
-//            for (Transaction transaction : stock.getTransactions()) {
-//                transactionValue = transaction.getTotalValue();
-//                transactionType = transaction.getTransactionType();
-//                if (isPurcheseTransaction(transactionType)) {
-//                    ownedShares.addAll(Share.createSharesFromTransaction(transaction));
-//                    closedPositionsBuyValue = closedPositionsBuyValue.add(transactionValue);
-//                    investmentResault = investmentResault.subtract(transactionValue);
-//                } else if (isSellTransaction(transactionType)) {
-//                    closedPositionsSellValue = closedPositionsSellValue.add(transactionValue);
-//                    investmentResault = investmentResault.add(transactionValue);
-//                }
-//            }
-//            stockPerformance.updateInvestmentResault(investmentResault);
-//        } else if (isOpen(stock)) {
-//            TransactionType transactionType;
-//            List<Share> purchesedShares = new ArrayList<>();
-//            List<Share> soldShares = new ArrayList<>();
-//
-//            for (Transaction transaction : stock.getTransactions()) {
-//                transactionType = transaction.getTransactionType();
-//                if (isPurcheseTransaction(transactionType)) {
-//                    purchesedShares.addAll(Share.createSharesFromTransaction(transaction));
-//                } else if (isSellTransaction(transactionType)) {
-//                    soldShares.addAll(Share.createSharesFromTransaction(transaction));
-//                }
-//            }
-//
-//            // Calculating investment Resault from closed positons
-//            BigDecimal investmentResault = BigDecimal.ZERO;
-//            for (Share share : soldShares) {
-//                closedPositionsBuyValue.add(purchesedShares.get(0).getPrice());
-//                closedPositionsSellValue.add(share.getPrice());
-//                investmentResault = investmentResault.add(share.subtractSharesValue(purchesedShares.get(0)));
-//                purchesedShares.remove(0);
-//            }
-//
-//            // Calculating open position
-//            BigDecimal openPositionsValue = BigDecimal.ZERO;
-//            for (Share share : purchesedShares) {
-//                openPositionsValue = openPositionsValue.add(share.getPrice());
-//            }
-//
-//            stockPerformance.updateInvestmentResault(investmentResault);
-//            stockPerformance.setOpenPositionValue(openPositionsValue);
-//            stockPerformance.setOpenPositionAmount(purchesedShares.size());
-//        } else if (isLacking(stock)) {
-//
-//        }
-
-//        for (Transaction transaction : stock.getTransactions()) {
-//            if(transaction.getTransactionType() == TransactionType.BUY) {
-//                quantityOwned += transaction.getAmount();
-//                presentValue = presentValue.add(transaction.getTotalValue());
-//                closedPositionsBuyValue = closedPositionsBuyValue.add(transaction.getTotalValue());
-//            } else if(transaction.getTransactionType() == TransactionType.SELL) {
-//                quantityOwned -= transaction.getAmount();
-//                if (quantityOwned < 0) {
-//                    Long quantityForCalculation = transaction.getAmount() + quantityOwned;
-//                    BigDecimal partialValue = new BigDecimal(quantityForCalculation.toString()).multiply(transaction.getPrice());
-//                    presentValue = presentValue.subtract(partialValue);
-//                    stockPerformance.updateInvestmentResault(presentValue.negate());
-//                    presentValue = BigDecimal.ZERO;
-//                    quantityOwned = 0;
-//                    closedPositionsSellValue = closedPositionsSellValue.add(partialValue);
-//                } else if (quantityOwned == 0) {
-//                    presentValue = presentValue.subtract(transaction.getTotalValue());
-//                    stockPerformance.updateInvestmentResault(presentValue.negate());
-//                    presentValue = BigDecimal.ZERO;
-//                    closedPositionsSellValue = closedPositionsSellValue.add(transaction.getTotalValue());
-//                } else {
-//                    presentValue = presentValue.subtract(transaction.getTotalValue());
-//                    closedPositionsSellValue = closedPositionsSellValue.add(transaction.getTotalValue());
-//                }
-//            }
-//        }
         //TODO Change logic of summing transactions. Probably aggregate Transactions into POSITIONS. Sort transactions before adding.
         double earnedPercentage;
         if (closedPositionsSellValue.equals(BigDecimal.ZERO)) {
@@ -189,6 +107,7 @@ public class GpwStockCalculator implements StockCalculator {
         for (Stock stock : stockPortoflio.getStockList()) {
             stockPerformance = calculate(stock);
             portfolioPerformance.updatePortfolioResault(stockPerformance.getInvestmenResault());
+            portfolioPerformance.updateLackingIncome(stockPerformance.getLackingSellsValue());
         }
 
         return portfolioPerformance;
