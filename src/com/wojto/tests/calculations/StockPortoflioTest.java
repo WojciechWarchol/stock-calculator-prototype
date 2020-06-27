@@ -20,7 +20,7 @@ class StockPortoflioTest {
 
     static private List<Transaction> transactionList = new ArrayList<>();
     static private StockPortoflio stockPortoflio = new StockPortoflio();
-    static private Transaction additionalTransaction = new Transaction(LocalDateTime.now(), "STOCK3", TransactionType.BUY, 1, new BigDecimal("10.0"), new BigDecimal("10.0"));
+    static private Transaction additionalTransaction = new Transaction(LocalDateTime.now(), "STOCK3", "WWA-GPW", TransactionType.BUY, 1, new BigDecimal("10.0"), new BigDecimal("10.0"));
     static private Stock STOCK3 = new Stock("STOCK3");
 
 

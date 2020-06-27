@@ -2,14 +2,19 @@ package com.wojto.model;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
 
 public class Stock {
 
+    private static final String GPW_SYMBOL = "GPW_SYMBOL";
+    private static final List<String> FOREIGN_STOCK_SYMBOLS = Arrays.asList("DEU-XETRA", "GBR-LSE", "USA-NYSE", "USA-NASDAQ");
+
     private String stockName;
     private List<Transaction> transactions = new ArrayList<>();
     private StateOfPossesion stateOfPossesion;
+    //TODO add tests
     private ProvisionRate provisionRate;
 
     public Stock(String stockName, List<Transaction> transactions, StateOfPossesion stateOfPossesion) {
@@ -24,6 +29,7 @@ public class Stock {
 
     public Stock(Transaction transaction) {
         this.stockName = transaction.getStockSymbol();
+        this.provisionRate = determineProvisionRateForStock(transaction.getMarketSymbol());
         addTransaction(transaction);
     }
 
@@ -50,6 +56,16 @@ public class Stock {
         }
 
         stateOfPossesion = checkStateOfPossesion();
+    }
+
+    private ProvisionRate determineProvisionRateForStock(String marketSymbol) {
+        if (marketSymbol.equals("WWA-GPW")) {
+            return new ProvisionRate.ProvisionRateBuilder().mBankGpwProvisionRate().build();
+        } else if (FOREIGN_STOCK_SYMBOLS.contains(marketSymbol)) {
+            return new ProvisionRate.ProvisionRateBuilder().mBankInternationalStockProvisionRate().build();
+        } else {
+            return new ProvisionRate.ProvisionRateBuilder().rate(0).minimalProvision(0).build();
+        }
     }
 
     public StateOfPossesion getStateOfPossesion() {

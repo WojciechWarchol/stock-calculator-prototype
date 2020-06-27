@@ -34,6 +34,7 @@ public class CsvFileTransactionParser implements TransactionParser {
         Transaction transaction = new Transaction(
                 createLocalDateTimeFromString(transactionArguments[0]),
                 transactionArguments[1],
+                transactionArguments[2],
                 determineTransactionType(transactionArguments[3]),
                 Long.parseLong(transactionArguments[4].replace(" ","")),
                 // TODO make a util method for this replace
