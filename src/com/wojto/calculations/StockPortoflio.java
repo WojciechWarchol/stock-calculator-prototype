@@ -72,7 +72,7 @@ public class StockPortoflio {
 
     public Stock getStockFromSymbol(String string) {
         for (Stock stock : stockList) {
-            if (stock.getStockName() == string) {
+            if (stock.getStockName().equals(string)) {
                 return stock;
             }
         }

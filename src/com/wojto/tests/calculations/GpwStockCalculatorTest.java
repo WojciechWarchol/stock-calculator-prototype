@@ -11,6 +11,8 @@ import com.wojto.model.Transaction;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.CsvFileSource;
 
 import java.io.File;
 import java.math.BigDecimal;
@@ -60,57 +62,20 @@ class GpwStockCalculatorTest {
     void tearDown() {
     }
 
-    @Test
-    void calculate() {
-        //TODO Change to parameterized tests
-        StockPerformance performanceOfCLSDPROF1 = calculator.calculate(CLSDPROF1);
-        StockPerformance performanceOfCLSDLOSS1 = calculator.calculate(CLSDLOSS1);
-        StockPerformance performanceOfOPEN1 = calculator.calculate(OPEN1);
-        StockPerformance performanceOfOPEN2 = calculator.calculate(OPEN2);
-        StockPerformance performanceOfOPEN3 = calculator.calculate(OPEN3);
-        StockPerformance performanceOfLACKS1 = calculator.calculate(LACKS1);
-        StockPerformance performanceOfLACKS2 = calculator.calculate(LACKS2);
-        StockPerformance performanceOfLASTDATE1 = calculator.calculate(LASTDATE1);
+    @ParameterizedTest
+    @CsvFileSource(resources = "/com/wojto/tests/calculations/Test_Transactions_Calculator_Expected.csv", numLinesToSkip = 1, delimiter = ';')
+    void parameterizedCalculateTest(String stockSymbol, String openValue, int openAmount, String investmentResult, double earnedPercentage) {
 
-        assertEquals(new BigDecimal("0"), performanceOfCLSDPROF1.getOpenPositionValue());
-        assertEquals(0, performanceOfCLSDPROF1.getOpenPositionAmount());
-        assertEquals(new BigDecimal("100.00"), performanceOfCLSDPROF1.getInvestmenResault());
-        assertEquals(3.33, performanceOfCLSDPROF1.getEarnedPercent());
+        StockPerformance performanceOfStock = calculator.calculate(PORTFOLIO.getStockFromSymbol(stockSymbol));
 
-        assertEquals(new BigDecimal("0"), performanceOfCLSDLOSS1.getOpenPositionValue());
-        assertEquals(0, performanceOfCLSDLOSS1.getOpenPositionAmount());
-        assertEquals(new BigDecimal("-260.80"), performanceOfCLSDLOSS1.getInvestmenResault());
-        assertEquals(-22.65, performanceOfCLSDLOSS1.getEarnedPercent());
+        checkPerformance(performanceOfStock, openValue, openAmount, investmentResult, earnedPercentage);
+    }
 
-        assertEquals(new BigDecimal("10.00"), performanceOfOPEN1.getOpenPositionValue());
-        assertEquals(10, performanceOfOPEN1.getOpenPositionAmount());
-        assertEquals(new BigDecimal("0"), performanceOfOPEN1.getInvestmenResault());
-        assertEquals(0.0, performanceOfOPEN1.getEarnedPercent());
-
-        assertEquals(new BigDecimal("410.00"), performanceOfOPEN2.getOpenPositionValue());
-        assertEquals(200, performanceOfOPEN2.getOpenPositionAmount());
-        assertEquals(new BigDecimal("64.00"), performanceOfOPEN2.getInvestmenResault());
-        assertEquals(3.90, performanceOfOPEN2.getEarnedPercent());
-
-        assertEquals(new BigDecimal("1100.00"), performanceOfOPEN3.getOpenPositionValue());
-        assertEquals(110, performanceOfOPEN3.getOpenPositionAmount());
-        assertEquals(new BigDecimal("-100.00"), performanceOfOPEN3.getInvestmenResault());
-        assertEquals(-10.00, performanceOfOPEN3.getEarnedPercent());
-
-        assertEquals(new BigDecimal("0"), performanceOfLACKS1.getOpenPositionValue());
-        assertEquals(0, performanceOfLACKS1.getOpenPositionAmount());
-        assertEquals(new BigDecimal("0"), performanceOfLACKS1.getInvestmenResault());
-        assertEquals(0.0, performanceOfLACKS1.getEarnedPercent());
-
-        assertEquals(new BigDecimal("0"), performanceOfLACKS2.getOpenPositionValue());
-        assertEquals(0, performanceOfLACKS2.getOpenPositionAmount());
-        assertEquals(new BigDecimal("50.00"), performanceOfLACKS2.getInvestmenResault());
-        assertEquals(5.0, performanceOfLACKS2.getEarnedPercent());
-
-        assertEquals(new BigDecimal("0"), performanceOfLASTDATE1.getOpenPositionValue());
-        assertEquals(0, performanceOfLASTDATE1.getOpenPositionAmount());
-        assertEquals(new BigDecimal("341.30"), performanceOfLASTDATE1.getInvestmenResault());
-        assertEquals(34.13, performanceOfLASTDATE1.getEarnedPercent());
+    private void checkPerformance(StockPerformance performanceOfStock, String openValue, int openAmount, String investmentResult, double earnedPercentage) {
+        assertEquals(new BigDecimal(openValue), performanceOfStock.getOpenPositionValue());
+        assertEquals(openAmount, performanceOfStock.getOpenPositionAmount());
+        assertEquals(new BigDecimal(investmentResult), performanceOfStock.getInvestmenResault());
+        assertEquals(earnedPercentage, performanceOfStock.getEarnedPercent());
     }
 
     @Test
