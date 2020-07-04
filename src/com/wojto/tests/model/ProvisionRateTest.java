@@ -1,5 +1,6 @@
-package com.wojto.model;
+package com.wojto.tests.model;
 
+import com.wojto.model.ProvisionRate;
 import org.junit.jupiter.api.Test;
 
 import java.math.BigDecimal;

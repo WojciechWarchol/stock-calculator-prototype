@@ -36,11 +36,18 @@ public class CsvFileTransactionParser implements TransactionParser {
                 transactionArguments[1],
                 transactionArguments[2],
                 determineTransactionType(transactionArguments[3]),
-                Long.parseLong(transactionArguments[4].replace(" ","")),
-                // TODO make a util method for this replace
-                new BigDecimal(transactionArguments[5].replace(',', '.').replace(" ","")),
-                new BigDecimal(transactionArguments[7].replace(',', '.').replace(" ","")));
+                Long.parseLong(parseStockAmountForLong(transactionArguments[4])),
+                new BigDecimal(parseCurrencyForBigDecimal(transactionArguments[5])),
+                new BigDecimal(parseCurrencyForBigDecimal(transactionArguments[7])));
         return transaction;
+    }
+
+    private String parseStockAmountForLong(String transactionArgument) {
+        return transactionArgument.replace(" ", "");
+    }
+
+    private String parseCurrencyForBigDecimal(String transactionArgument) {
+        return transactionArgument.replace(',', '.').replace(" ", "");
     }
 
     private String[] splitTransactionString(String transactionString) {
