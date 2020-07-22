@@ -98,6 +98,14 @@ public class Stock {
         //TODO mark OPEN as LACKS if it has sells before first purchese
     }
 
+    public ProvisionRate getProvisionRate() {
+        return provisionRate;
+    }
+
+    public void setProvisionRate(ProvisionRate provisionRate) {
+        this.provisionRate = provisionRate;
+    }
+
     public LocalDateTime getLastTransactionDate() {
         LocalDateTime lastDate = LocalDateTime.MIN;
         LocalDateTime dateToCheck;

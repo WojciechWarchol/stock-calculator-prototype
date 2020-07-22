@@ -4,7 +4,7 @@ import java.math.BigDecimal;
 
 public class ProvisionRate {
 
-    private final double rate;
+    private final BigDecimal rate;
     private final BigDecimal minimalProvision;
 
     public ProvisionRate(ProvisionRateBuilder builder) {
@@ -12,7 +12,7 @@ public class ProvisionRate {
         this.minimalProvision = builder.minimalProvision;
     }
 
-    public double getRate() {
+    public BigDecimal getRate() {
         return rate;
     }
 
@@ -22,23 +22,33 @@ public class ProvisionRate {
 
     public static class ProvisionRateBuilder {
 
-        private double rate;
+        private BigDecimal rate;
         private BigDecimal minimalProvision;
 
         public ProvisionRateBuilder mBankGpwProvisionRate() {
-            this.rate = 0.39;
+            this.rate(0.39);
             this.minimalProvision(3);
             return this;
         }
 
         public ProvisionRateBuilder mBankInternationalStockProvisionRate() {
-            this.rate = 0.29;
+            this.rate(0.29);
             this.minimalProvision(19);
             return this;
         }
 
-        public ProvisionRateBuilder rate(double rate) {
+        public ProvisionRateBuilder rate(BigDecimal rate) {
             this.rate = rate;
+            return this;
+        }
+
+        public ProvisionRateBuilder rate(int rate) {
+            this.rate = new BigDecimal(rate);
+            return this;
+        }
+
+        public ProvisionRateBuilder rate(double rate) {
+            this.rate = new BigDecimal(rate);
             return this;
         }
 

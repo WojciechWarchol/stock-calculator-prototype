@@ -9,6 +9,11 @@ import java.util.List;
 
 public class GpwStockCalculator implements StockCalculator {
 
+    private BigDecimal tempProvisionValue = BigDecimal.ZERO;
+    private ProvisionRate provisionRate;
+    private Transaction previousTransaction;
+    private StockPerformance currentStockPerformance;
+
     public GpwStockCalculator() {}
 
     @Override
@@ -16,20 +21,20 @@ public class GpwStockCalculator implements StockCalculator {
         // TODO Include provisions
         BigDecimal closedPositionsBuyValue = BigDecimal.ZERO;
         BigDecimal closedPositionsSellValue = BigDecimal.ZERO;
-        StockPerformance stockPerformance = new StockPerformance();
+        currentStockPerformance = new StockPerformance();
 
         TransactionType transactionType;
         List<Share> ownedShares = new ArrayList<>();
 
-        Transaction previousTransaction = stock.getTransactions().get(0);
-        BigDecimal tempProvisionValue = BigDecimal.ZERO;
+        previousTransaction = stock.getTransactions().get(0);
+        provisionRate = stock.getProvisionRate();
 
         for (Transaction transaction : stock.getTransactions()) {
             transactionType = transaction.getTransactionType();
             if (isPurcheseTransaction(transactionType)) {
                 ownedShares.addAll(Share.createSharesFromTransaction(transaction));
 
-
+                calculateProvisionForTransaction(transaction);
             } else if (isSellTransaction(transactionType)) {
                 List<Share> tempListOfSoldShares = new ArrayList<>();
                 tempListOfSoldShares.addAll(Share.createSharesFromTransaction(transaction));
@@ -52,18 +57,21 @@ public class GpwStockCalculator implements StockCalculator {
                         lackingSellValue = lackingSellValue.add(lackingSoldShare.getPrice());
                         currentlyProcessedSoldShare++;
                     }
-                    stockPerformance.updateLackingSellsValue(lackingSellValue);
+                    currentStockPerformance.updateLackingSellsValue(lackingSellValue);
                 }
-                stockPerformance.updateInvestmentResault(sellResault);
+                calculateProvisionForTransaction(transaction);
+                currentStockPerformance.updateInvestmentResault(sellResault);
             }
         }
 
-        stockPerformance.setOpenPositionAmount(ownedShares.size());
+        applyTempProvisionsToStockPerformance();
+
+        currentStockPerformance.setOpenPositionAmount(ownedShares.size());
         BigDecimal valueOfOpenShares = BigDecimal.ZERO;
         for (Share share : ownedShares) {
             valueOfOpenShares = valueOfOpenShares.add(share.getPrice());
         }
-        stockPerformance.setOpenPositionValue(valueOfOpenShares);
+        currentStockPerformance.setOpenPositionValue(valueOfOpenShares);
 
         //TODO Maybe aggregate Transactions into POSITIONS. Sort stock performance by date
 
@@ -81,8 +89,8 @@ public class GpwStockCalculator implements StockCalculator {
             }
         }
 
-        stockPerformance.setEarnedPercent(earnedPercentage);
-        return stockPerformance;
+        currentStockPerformance.setEarnedPercent(earnedPercentage);
+        return currentStockPerformance;
     }
 
     private boolean isLacking(Stock stock) {
@@ -104,6 +112,26 @@ public class GpwStockCalculator implements StockCalculator {
     private boolean isClosed(Stock stock) {
         return stock.getStateOfPossesion() == StateOfPossesion.CLOSED;
     }
+
+    private void calculateProvisionForTransaction(Transaction currentTransaction) {
+        if (!currentTransaction.isSameDayAndTypeAs(previousTransaction)) {
+            applyTempProvisionsToStockPerformance();
+        }
+        addTransactionProvisionToTempProvisionValue(currentTransaction);
+    }
+
+    private void addTransactionProvisionToTempProvisionValue(Transaction currentTransaction) {
+        tempProvisionValue = tempProvisionValue.add(currentTransaction.getTotalValue().multiply(provisionRate.getRate()));
+    }
+
+    private void applyTempProvisionsToStockPerformance() {
+        if (tempProvisionValue.compareTo(provisionRate.getMinimalProvision()) < 0) {
+            tempProvisionValue = provisionRate.getMinimalProvision();
+        }
+        currentStockPerformance.updatePaidProvisions(tempProvisionValue);
+        tempProvisionValue = BigDecimal.ZERO;
+    }
+
 
     @Override
     public PortfolioPerformance calculatePortfolioPerformance(StockPortoflio stockPortoflio) {
