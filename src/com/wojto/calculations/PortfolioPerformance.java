@@ -5,7 +5,8 @@ import java.util.Objects;
 
 public class PortfolioPerformance {
 
-    private BigDecimal portfolioResault = new BigDecimal("0");
+    private BigDecimal portfolioResault = BigDecimal.ZERO;
+    private BigDecimal lackingIncome = BigDecimal.ZERO;
 
     public PortfolioPerformance() {}
 
@@ -19,6 +20,18 @@ public class PortfolioPerformance {
 
     public void updatePortfolioResault(BigDecimal amount) {
         portfolioResault = portfolioResault.add(amount);
+    }
+
+    public BigDecimal getLackingIncome() {
+        return lackingIncome;
+    }
+
+    public void setLackingIncome(BigDecimal lackingIncome) {
+        this.lackingIncome = lackingIncome;
+    }
+
+    public void updateLackingIncome(BigDecimal amount) {
+        lackingIncome = lackingIncome.add(amount);
     }
 
     @Override

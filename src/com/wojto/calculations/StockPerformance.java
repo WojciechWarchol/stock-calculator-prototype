@@ -13,6 +13,7 @@ public class StockPerformance implements Comparable<StockPerformance> {
 
     private double earnedPercent = 0.00;
     // TODO Sum up provisions
+    private BigDecimal paidProvisions = BigDecimal.ZERO;
 
 
     public StockPerformance(String stockSymbol, BigDecimal investmenResault) {
@@ -80,6 +81,14 @@ public class StockPerformance implements Comparable<StockPerformance> {
 
     public void setEarnedPercent(double earnedPercent) {
         this.earnedPercent = earnedPercent;
+    }
+
+    public BigDecimal getPaidProvisions() {
+        return paidProvisions;
+    }
+
+    public void setPaidProvisions(BigDecimal paidProvisions) {
+        this.paidProvisions = paidProvisions;
     }
 
     @Override

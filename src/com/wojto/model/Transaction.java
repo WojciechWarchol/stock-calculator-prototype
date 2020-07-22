@@ -8,6 +8,7 @@ public class Transaction implements Comparable<Transaction>{
 
     private LocalDateTime transactionDate;
     private String stockSymbol;
+    private String marketSymbol;
     private TransactionType transactionType;
     private long amount;
     private BigDecimal price;
@@ -15,9 +16,10 @@ public class Transaction implements Comparable<Transaction>{
 
     // DECISION Market, currency of price and total, provision
 
-    public Transaction(LocalDateTime transactionDate, String stockSymbol, TransactionType transactionType, long amount, BigDecimal price, BigDecimal totalValue) {
+    public Transaction(LocalDateTime transactionDate, String stockSymbol, String marketSymbol, TransactionType transactionType, long amount, BigDecimal price, BigDecimal totalValue) {
         this.transactionDate = transactionDate;
         this.stockSymbol = stockSymbol;
+        this.marketSymbol = marketSymbol;
         this.transactionType = transactionType;
         this.amount = amount;
         this.price = price;
@@ -38,6 +40,14 @@ public class Transaction implements Comparable<Transaction>{
 
     public void setStockSymbol(String stockSymbol) {
         this.stockSymbol = stockSymbol;
+    }
+
+    public String getMarketSymbol() {
+        return marketSymbol;
+    }
+
+    public void setMarketSymbol(String marketSymbol) {
+        this.marketSymbol = marketSymbol;
     }
 
     public TransactionType getTransactionType() {
