@@ -3,11 +3,14 @@ package com.wojto.calculations;
 import com.wojto.model.*;
 
 import java.math.BigDecimal;
+import java.math.MathContext;
 import java.math.RoundingMode;
 import java.util.ArrayList;
 import java.util.List;
 
 public class GpwStockCalculator implements StockCalculator {
+
+    private static MathContext precision = new MathContext(3);
 
     private BigDecimal tempProvisionValue = BigDecimal.ZERO;
     private ProvisionRate provisionRate;
@@ -18,7 +21,6 @@ public class GpwStockCalculator implements StockCalculator {
 
     @Override
     public StockPerformance calculate(Stock stock) {
-        // TODO Include provisions
         BigDecimal closedPositionsBuyValue = BigDecimal.ZERO;
         BigDecimal closedPositionsSellValue = BigDecimal.ZERO;
         currentStockPerformance = new StockPerformance();
@@ -121,7 +123,7 @@ public class GpwStockCalculator implements StockCalculator {
     }
 
     private void addTransactionProvisionToTempProvisionValue(Transaction currentTransaction) {
-        tempProvisionValue = tempProvisionValue.add(currentTransaction.getTotalValue().multiply(provisionRate.getRate()));
+        tempProvisionValue = tempProvisionValue.add(currentTransaction.getTotalValue().multiply(provisionRate.getRate().divide(BigDecimal.valueOf(100)))).round(precision);
     }
 
     private void applyTempProvisionsToStockPerformance() {

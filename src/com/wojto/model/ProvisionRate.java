@@ -27,13 +27,13 @@ public class ProvisionRate {
 
         public ProvisionRateBuilder mBankGpwProvisionRate() {
             this.rate(0.39);
-            this.minimalProvision(3);
+            this.minimalProvision(3.00);
             return this;
         }
 
         public ProvisionRateBuilder mBankInternationalStockProvisionRate() {
             this.rate(0.29);
-            this.minimalProvision(19);
+            this.minimalProvision(19.00);
             return this;
         }
 

@@ -64,18 +64,19 @@ class GpwStockCalculatorTest {
 
     @ParameterizedTest
     @CsvFileSource(resources = "/com/wojto/tests/calculations/Test_Transactions_Calculator_Expected.csv", numLinesToSkip = 1, delimiter = ';')
-    void parameterizedCalculateTest(String stockSymbol, String openValue, int openAmount, String investmentResult, double earnedPercentage) {
+    void parameterizedCalculateTest(String stockSymbol, String openValue, int openAmount, String investmentResult, double earnedPercentage, String paidProvisions) {
 
         StockPerformance performanceOfStock = calculator.calculate(PORTFOLIO.getStockFromSymbol(stockSymbol));
 
-        checkPerformance(performanceOfStock, openValue, openAmount, investmentResult, earnedPercentage);
+        checkPerformance(performanceOfStock, openValue, openAmount, investmentResult, earnedPercentage, paidProvisions);
     }
 
-    private void checkPerformance(StockPerformance performanceOfStock, String openValue, int openAmount, String investmentResult, double earnedPercentage) {
+    private void checkPerformance(StockPerformance performanceOfStock, String openValue, int openAmount, String investmentResult, double earnedPercentage, String paindProvisions) {
         assertEquals(new BigDecimal(openValue), performanceOfStock.getOpenPositionValue());
         assertEquals(openAmount, performanceOfStock.getOpenPositionAmount());
         assertEquals(new BigDecimal(investmentResult), performanceOfStock.getInvestmenResault());
         assertEquals(earnedPercentage, performanceOfStock.getEarnedPercent());
+        assertEquals(new BigDecimal(paindProvisions), performanceOfStock.getPaidProvisions());
     }
 
     @Test

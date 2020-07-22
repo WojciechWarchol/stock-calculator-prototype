@@ -12,10 +12,11 @@ class ProvisionRateTest {
     public static final double GPW_RATE = 0.39;
     public static final double INTERNATIONAL_STOCK_RATE = 0.29;
     public static final double TEST_RATE = 0.69;
-    public static final BigDecimal GPW_MINIMAL_PROVISION = new BigDecimal(3);
-    public static final BigDecimal INTERNATIONAL_STOCK_MINIMAL_PROVISION = new BigDecimal(19);
+    public static final BigDecimal GPW_MINIMAL_PROVISION = new BigDecimal("3.00");
+    public static final BigDecimal INTERNATIONAL_STOCK_MINIMAL_PROVISION = new BigDecimal("19.00");
     public static final BigDecimal TEST_MINIMAL_PROVISION = new BigDecimal(69);
 
+    //TODO Fix provision rounding and initiation of numbers such as 3 (instaed of 3.00) also in Stock calculator test
     @Test
     void testMBankGpwProvisionRateBuilder() {
         ProvisionRate gpwProvisionRate = new ProvisionRate.ProvisionRateBuilder().mBankGpwProvisionRate().build();
