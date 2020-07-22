@@ -35,10 +35,9 @@ public class CsvFileTransactionParser implements TransactionParser {
                 createLocalDateTimeFromString(transactionArguments[0]),
                 transactionArguments[1],
                 determineTransactionType(transactionArguments[3]),
-                Long.parseLong(transactionArguments[4].replace(" ","")),
-                // TODO make a util method for this replace
-                new BigDecimal(transactionArguments[5].replace(',', '.').replace(" ","")),
-                new BigDecimal(transactionArguments[7].replace(',', '.').replace(" ","")));
+                Long.parseLong(eliminateWhitespaceCharacter(transactionArguments[4])),
+                new BigDecimal(replaceCommaWithDot(transactionArguments[5])),
+                new BigDecimal(replaceCommaWithDot(transactionArguments[7])));
         return transaction;
     }
 
@@ -56,6 +55,14 @@ public class CsvFileTransactionParser implements TransactionParser {
         } else {
             return null;
         }
+    }
+
+    private String eliminateWhitespaceCharacter(String transactionArgument) {
+        return transactionArgument.replace(" ", "");
+    }
+
+    private String replaceCommaWithDot(String transactionArgument) {
+        return transactionArgument.replace(',', '.').replace(" ","");
     }
 
     private LocalDateTime createLocalDateTimeFromString(String stringDate) {
