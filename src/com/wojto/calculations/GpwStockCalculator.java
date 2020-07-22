@@ -21,10 +21,15 @@ public class GpwStockCalculator implements StockCalculator {
         TransactionType transactionType;
         List<Share> ownedShares = new ArrayList<>();
 
+        Transaction previousTransaction = stock.getTransactions().get(0);
+        BigDecimal tempProvisionValue = BigDecimal.ZERO;
+
         for (Transaction transaction : stock.getTransactions()) {
             transactionType = transaction.getTransactionType();
             if (isPurcheseTransaction(transactionType)) {
                 ownedShares.addAll(Share.createSharesFromTransaction(transaction));
+
+
             } else if (isSellTransaction(transactionType)) {
                 List<Share> tempListOfSoldShares = new ArrayList<>();
                 tempListOfSoldShares.addAll(Share.createSharesFromTransaction(transaction));

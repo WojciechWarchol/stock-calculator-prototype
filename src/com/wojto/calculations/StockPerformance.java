@@ -91,6 +91,8 @@ public class StockPerformance implements Comparable<StockPerformance> {
         this.paidProvisions = paidProvisions;
     }
 
+    public void updatePaidProvisions(BigDecimal paidProvision) { this.paidProvisions = paidProvisions.add(paidProvision); }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;

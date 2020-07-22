@@ -82,6 +82,11 @@ public class Transaction implements Comparable<Transaction>{
         this.totalValue = totalValue;
     }
 
+
+    public boolean isSameDayAndTypeAs(Transaction otherTransaction) {
+        return (this.transactionDate.toLocalDate().equals(otherTransaction.transactionDate.toLocalDate()) && this.transactionType.equals(otherTransaction.getTransactionType()));
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
