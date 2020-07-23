@@ -1,6 +1,7 @@
 package com.wojto.model;
 
 import java.math.BigDecimal;
+import java.math.MathContext;
 
 public class ProvisionRate {
 
@@ -22,6 +23,7 @@ public class ProvisionRate {
 
     public static class ProvisionRateBuilder {
 
+        private final MathContext precision = new MathContext(2);
         private BigDecimal rate;
         private BigDecimal minimalProvision;
 
@@ -38,32 +40,32 @@ public class ProvisionRate {
         }
 
         public ProvisionRateBuilder rate(BigDecimal rate) {
-            this.rate = rate;
+            this.rate = rate.round(precision);
             return this;
         }
 
         public ProvisionRateBuilder rate(int rate) {
-            this.rate = new BigDecimal(rate);
+            this.rate = new BigDecimal(rate).round(precision);
             return this;
         }
 
         public ProvisionRateBuilder rate(double rate) {
-            this.rate = new BigDecimal(rate);
+            this.rate = new BigDecimal(rate).round(precision);
             return this;
         }
 
         public ProvisionRateBuilder minimalProvision(BigDecimal minimalProvision) {
-            this.minimalProvision = minimalProvision;
+            this.minimalProvision = minimalProvision.round(precision);
             return this;
         }
 
         public ProvisionRateBuilder minimalProvision(int minimalProvision) {
-            this.minimalProvision = new BigDecimal(minimalProvision);
+            this.minimalProvision = new BigDecimal(minimalProvision).round(precision);
             return this;
         }
 
         public ProvisionRateBuilder minimalProvision(double minimalProvision) {
-            this.minimalProvision = new BigDecimal(minimalProvision);
+            this.minimalProvision = new BigDecimal(minimalProvision).round(precision);
             return this;
         }
 

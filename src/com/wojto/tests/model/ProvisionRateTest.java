@@ -4,16 +4,18 @@ import com.wojto.model.ProvisionRate;
 import org.junit.jupiter.api.Test;
 
 import java.math.BigDecimal;
+import java.math.MathContext;
 
 import static org.junit.jupiter.api.Assertions.*;
 
 class ProvisionRateTest {
 
-    public static final double GPW_RATE = 0.39;
-    public static final double INTERNATIONAL_STOCK_RATE = 0.29;
-    public static final double TEST_RATE = 0.69;
-    public static final BigDecimal GPW_MINIMAL_PROVISION = new BigDecimal("3.00");
-    public static final BigDecimal INTERNATIONAL_STOCK_MINIMAL_PROVISION = new BigDecimal("19.00");
+    public static final MathContext PRECISION = new MathContext(2);
+    public static final BigDecimal GPW_RATE = new BigDecimal(0.39).round(PRECISION);
+    public static final BigDecimal INTERNATIONAL_STOCK_RATE = new BigDecimal(0.29).round(PRECISION);
+    public static final BigDecimal TEST_RATE = new BigDecimal(0.69).round(PRECISION);
+    public static final BigDecimal GPW_MINIMAL_PROVISION = new BigDecimal("3");
+    public static final BigDecimal INTERNATIONAL_STOCK_MINIMAL_PROVISION = new BigDecimal("19");
     public static final BigDecimal TEST_MINIMAL_PROVISION = new BigDecimal(69);
 
     //TODO Fix provision rounding and initiation of numbers such as 3 (instaed of 3.00) also in Stock calculator test
