@@ -143,6 +143,7 @@ public class GpwStockCalculator implements StockCalculator {
         for (Stock stock : stockPortoflio.getStockList()) {
             stockPerformance = calculate(stock);
             portfolioPerformance.updatePortfolioResault(stockPerformance.getInvestmenResault());
+            portfolioPerformance.updatePaidProvisions(stockPerformance.getPaidProvisions());
             portfolioPerformance.updateLackingIncome(stockPerformance.getLackingSellsValue());
         }
 

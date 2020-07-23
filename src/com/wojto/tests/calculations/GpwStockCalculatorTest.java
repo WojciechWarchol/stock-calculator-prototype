@@ -83,6 +83,7 @@ class GpwStockCalculatorTest {
     void calculatePortfolioPerformance() {
         PortfolioPerformance performance = calculator.calculatePortfolioPerformance(PORTFOLIO);
         assertEquals(new BigDecimal("194.50"), performance.getPortfolioResault());
+        assertEquals(new BigDecimal("86.22"), performance.getPaidProvisions());
         assertEquals(new BigDecimal("2050.00"), performance.getLackingIncome());
     }
 }
