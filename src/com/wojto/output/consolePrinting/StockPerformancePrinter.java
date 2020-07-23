@@ -23,7 +23,7 @@ public class StockPerformancePrinter {
 
     public static final String FORMAT_OPEN =   "%s%s%s%s%s%s%s%s%s%s%s%s%s%s%n";
     public static final String FORMAT_CLOSED = "%s%s%s%s%s%s%s%s%s%s%n";
-    public static final String FORMAT_PORTFOLIO_RESULT = "%-59s%-30s%n";
+    public static final String FORMAT_PORTFOLIO_RESULT = "%-59s%-42s%-17s%s%n";
 
     public static void printAbsolutePerformanceOfStock(Stock stock, StockPerformance stockPerformance) {
         StateOfPossesion stateOfThisStock = stock.getStateOfPossesion();
@@ -61,7 +61,9 @@ public class StockPerformancePrinter {
     public static void printPortfolioResult(PortfolioPerformance portfolioPerformance) {
         System.out.printf(FORMAT_PORTFOLIO_RESULT,
                 "Portfollio performance: ",
-                colorInvestmentResault(portfolioPerformance.getPortfolioResault()));
+                colorInvestmentResault(portfolioPerformance.getPortfolioResault()),
+                "Total:",
+                colorPaidProvisions(portfolioPerformance.getPaidProvisions().doubleValue()));
     }
 
     private static String colorInvestmentResault(BigDecimal investmentResault) {
