@@ -21,8 +21,8 @@ public class StockPerformancePrinter {
     public static final String ANSI_WHITE = "\u001B[37m";
 
 
-    public static final String FORMAT_OPEN =   "%s%s%s%s%s%s%s%s%s%s%s%s%n";
-    public static final String FORMAT_CLOSED = "%s%s%s%s%s%s%s%s%n";
+    public static final String FORMAT_OPEN =   "%s%s%s%s%s%s%s%s%s%s%s%s%s%s%n";
+    public static final String FORMAT_CLOSED = "%s%s%s%s%s%s%s%s%s%s%n";
     public static final String FORMAT_PORTFOLIO_RESULT = "%-59s%-30s%n";
 
     public static void printAbsolutePerformanceOfStock(Stock stock, StockPerformance stockPerformance) {
@@ -36,6 +36,8 @@ public class StockPerformancePrinter {
                     colorInvestmentResault(stockPerformance.getInvestmenResault()),
                     "  Percentage: ",
                     colorInvestmentPercentage(stockPerformance.getEarnedPercent()),
+                    "  Paid provisions: ",
+                    colorPaidProvisions(stockPerformance.getPaidProvisions().doubleValue()),
                     "  Currently owned: ",
                     colorOwnedStockAmmount(stockPerformance.getOpenPositionAmount()),
                     "  Value on purchase: ",
@@ -49,7 +51,9 @@ public class StockPerformancePrinter {
                     "Performance: ",
                     colorInvestmentResault(stockPerformance.getInvestmenResault()),
                     "  Percentage: ",
-                    colorInvestmentPercentage(stockPerformance.getEarnedPercent())
+                    colorInvestmentPercentage(stockPerformance.getEarnedPercent()),
+                    "  Paid provisions: ",
+                    colorPaidProvisions(stockPerformance.getPaidProvisions().doubleValue())
             );
         }
     }
@@ -96,6 +100,13 @@ public class StockPerformancePrinter {
     private static String colorOwnedStockAmmount(int ammount) {
         String coloredResault = String.format("%5s", ammount);
         coloredResault = ANSI_BLUE + coloredResault + ANSI_RESET;
+        return coloredResault;
+    }
+
+    private static String colorPaidProvisions(double ammount) {
+        String formattedProvision = String.format("%.2f", ammount);
+        String coloredResault = String.format("%7s", ammount);
+        coloredResault = ANSI_YELLOW + coloredResault + ANSI_RESET;
         return coloredResault;
     }
 
