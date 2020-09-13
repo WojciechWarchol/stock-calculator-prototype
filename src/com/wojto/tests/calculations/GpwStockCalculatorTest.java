@@ -35,6 +35,8 @@ class GpwStockCalculatorTest {
     static protected Stock LASTDATE1 = new Stock("LASTDATE1");
     static protected StockPortoflio PORTFOLIO = new StockPortoflio();
 
+    //TODO Add test for testing Tax year, rewrite this class, add Expected.csv file, and write test
+
     @BeforeAll
     static void setUp() {
         File file = new File(".\\resources\\Tests\\Test_Transactions_Calculator.Csv");
