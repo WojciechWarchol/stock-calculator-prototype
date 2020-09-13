@@ -9,7 +9,7 @@ import java.util.Scanner;
 
 public class CsvFileImporter implements Importer {
 
-    private static final String STOCK_TRANSACTION_REGEXP = "[0-9: \\.]+;[\\w]+;[\\w-]+;[K|S]{1};[\\d ]+;[\\d ,]+;[\\w]+;[\\d ,]+;[\\w]+";
+    private static final String STOCK_TRANSACTION_REGEXP = "[0-9: \\.]+;[\\w\\s-]+;[\\w-]+;[K|S]{1};[\\d ]+;[\\d ,]+;[\\w]+;[\\d ,]+;[\\w]+";
 
     //TODO Logically this class should be using the Transaction parser, not the other way around
 
