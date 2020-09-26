@@ -8,7 +8,7 @@ import java.util.Objects;
 
 public class Stock {
 
-    private static final String GPW_SYMBOL = "GPW_SYMBOL";
+    private static final String GPW_SYMBOL = "WWA-GPW";
     private static final List<String> FOREIGN_STOCK_SYMBOLS = Arrays.asList("DEU-XETRA", "GBR-LSE", "USA-NYSE", "USA-NASDAQ");
 
     private String stockName;
@@ -58,7 +58,7 @@ public class Stock {
     }
 
     private ProvisionRate determineProvisionRateForStock(String marketSymbol) {
-        if (marketSymbol.equals("WWA-GPW")) {
+        if (marketSymbol.equals(GPW_SYMBOL)) {
             return new ProvisionRate.ProvisionRateBuilder().mBankGpwProvisionRate().build();
         } else if (FOREIGN_STOCK_SYMBOLS.contains(marketSymbol)) {
             return new ProvisionRate.ProvisionRateBuilder().mBankInternationalStockProvisionRate().build();

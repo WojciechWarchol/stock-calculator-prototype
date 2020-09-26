@@ -6,6 +6,7 @@ import com.wojto.importing.CsvFileTransactionParser;
 import com.wojto.model.StateOfPossesion;
 import com.wojto.model.Stock;
 import com.wojto.model.Transaction;
+import org.junit.jupiter.api.Test;
 
 import java.io.File;
 import java.time.LocalDateTime;
@@ -26,6 +27,7 @@ class StockTest {
     static protected Stock LACKS1 = new Stock("LACKS1");
     static protected Stock LACKS2 = new Stock("LACKS2");
     static protected Stock LASTDATE1 = new Stock("LASTDATE1");
+    static protected Stock INTERNATIONAL = new Stock("INTERNATIONAL");
 
     static protected Stock ADDTESTER = new Stock("ADDTESTER");
 
@@ -48,6 +50,7 @@ class StockTest {
             LACKS1.addTransaction(transaction);
             LACKS2.addTransaction(transaction);
             LASTDATE1.addTransaction(transaction);
+            INTERNATIONAL.addTransaction(transaction);
         }
 
     }
@@ -85,5 +88,11 @@ class StockTest {
         assertEquals(LocalDateTime.of(2019, 4, 13, 15, 33, 15), LACKS1.getLastTransactionDate());
         assertEquals(LocalDateTime.of(2020, 4, 20, 11, 23, 10), LACKS2.getLastTransactionDate());
         assertEquals(LocalDateTime.of(2020, 4, 29, 9, 33, 15), LASTDATE1.getLastTransactionDate());
+    }
+
+    @Test
+    void checkMarket() {
+        assertEquals("WWA-GPW", OPEN1.getTransactions().get(0).getMarketSymbol());
+        assertEquals("DEU-XETRA", INTERNATIONAL.getTransactions().get(0).getMarketSymbol());
     }
 }
