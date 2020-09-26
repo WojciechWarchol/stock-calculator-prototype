@@ -153,6 +153,5 @@ public class GpwStockCalculator implements StockCalculator {
     //TODO Extract to seperate class, seperate Lacked, Opened and Closed Transactions. (obsolete I think)
     //TODO Sort by performance
     //TODO Add date of last transaction
-    //TODO Sum up (with privisions)
 
 }

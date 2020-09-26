@@ -47,6 +47,11 @@ public class PortfolioPerformance {
         lackingIncome = lackingIncome.add(amount);
     }
 
+    public BigDecimal calculateTotalResaultMinusProvisions() {
+        BigDecimal resaultMinusProvisions = portfolioResault.subtract(paidProvisions);
+        return resaultMinusProvisions;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;

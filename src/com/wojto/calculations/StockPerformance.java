@@ -11,8 +11,8 @@ public class StockPerformance implements Comparable<StockPerformance> {
     private BigDecimal investmenResault = BigDecimal.ZERO;
     private BigDecimal lackingSellsValue = BigDecimal.ZERO;
 
+    // TODO calculated sumed up percantage
     private double earnedPercent = 0.00;
-    // TODO Sum up provisions
     private BigDecimal paidProvisions = BigDecimal.ZERO;
 
 
