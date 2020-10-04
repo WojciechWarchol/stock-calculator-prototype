@@ -60,15 +60,16 @@ class GpwStockCalculatorTest {
         assertEquals(new BigDecimal("2050.00"), performance.getLackingIncome());
     }
 
-//    @ParameterizedTest
-//    @CsvFileSource(resources = "/com/wojto/tests/calculations/resources/Test_Tax_Year_Expected.Csv", numLinesToSkip = 1, delimiter = ':')
-//    void ParameterizedCheckTaxYearTest(String stockSymbol, int isoYear, String profit) {
-//
-//        setUpForTaxYearTest();
-//
-//        // TODO Finish after adding year to .calculate() method
-//
-//    }
+    @ParameterizedTest
+    @CsvFileSource(resources = "/com/wojto/tests/calculations/resources/Test_Tax_Year_Expected.Csv", numLinesToSkip = 1, delimiter = ';')
+    void ParameterizedCheckTaxYearTest(String stockSymbol, String profit) {
+
+        setUpForTaxYearTest();
+
+        StockPerformance performanceOfStock = calculator.calculate(PORTFOLIO.getStockFromSymbol(stockSymbol), TEST_YEAR);
+
+        assertEquals(new BigDecimal(profit), performanceOfStock.getInvestmenResault());
+    }
 
     private void checkPerformance(StockPerformance performanceOfStock, String openValue, int openAmount, String investmentResult, double earnedPercentage, String paindProvisions) {
         assertEquals(new BigDecimal(openValue), performanceOfStock.getOpenPositionValue());
