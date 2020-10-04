@@ -24,6 +24,8 @@ class GpwStockCalculatorTest {
     static protected List<Transaction> transactionList = new ArrayList<>();
     static protected GpwStockCalculator calculator = new GpwStockCalculator();
     static protected StockPortoflio PORTFOLIO = new StockPortoflio();
+    static protected CsvFileImporter fileImporter = new CsvFileImporter();
+    static protected CsvFileTransactionParser transactionParser = new CsvFileTransactionParser();
 
     //TODO Add test for testing Tax year, rewrite this class, add Expected.csv file, and write test
 
@@ -65,9 +67,15 @@ class GpwStockCalculatorTest {
 
     void setUpForCalculationAndPerformanceTest() {
         File file = new File(".\\resources\\Tests\\Test_Transactions_Calculator.Csv");
-        CsvFileImporter fileImporter = new CsvFileImporter();
-        CsvFileTransactionParser transactionParser = new CsvFileTransactionParser();
+        fillTransactionListAndPortfolio(file);
+    }
 
+    void setUpForTaxYearTest() {
+        File file = new File(".\\resources\\Tests\\Test_Transactions_Year.Csv");
+        fillTransactionListAndPortfolio(file);
+    }
+
+    private void fillTransactionListAndPortfolio(File file) {
         List<String> transactionStringList = fileImporter.importTransactionsFromFile(file);
         for (String transactionString : transactionStringList) {
             transactionList.add(transactionParser.createTransactionFromString(transactionString));
@@ -76,4 +84,5 @@ class GpwStockCalculatorTest {
             PORTFOLIO.addTransaction(transaction);
         }
     }
+
 }
