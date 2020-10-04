@@ -14,7 +14,9 @@ import org.junit.jupiter.params.provider.CsvFileSource;
 
 import java.io.File;
 import java.math.BigDecimal;
+import java.time.Year;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -26,6 +28,7 @@ class GpwStockCalculatorTest {
     static protected StockPortoflio PORTFOLIO = new StockPortoflio();
     static protected CsvFileImporter fileImporter = new CsvFileImporter();
     static protected CsvFileTransactionParser transactionParser = new CsvFileTransactionParser();
+    static private final List<Year> TEST_YEAR = Arrays.asList(Year.of(2020));
 
     //TODO Add test for testing Tax year, rewrite this class, add Expected.csv file, and write test
 
@@ -41,7 +44,7 @@ class GpwStockCalculatorTest {
 
         setUpForCalculationAndPerformanceTest();
 
-        StockPerformance performanceOfStock = calculator.calculate(PORTFOLIO.getStockFromSymbol(stockSymbol));
+        StockPerformance performanceOfStock = calculator.calculate(PORTFOLIO.getStockFromSymbol(stockSymbol), TEST_YEAR);
 
         checkPerformance(performanceOfStock, openValue, openAmount, investmentResult, earnedPercentage, paidProvisions);
     }
@@ -51,11 +54,21 @@ class GpwStockCalculatorTest {
 
         setUpForCalculationAndPerformanceTest();
 
-        PortfolioPerformance performance = calculator.calculatePortfolioPerformance(PORTFOLIO);
+        PortfolioPerformance performance = calculator.calculatePortfolioPerformance(PORTFOLIO, TEST_YEAR);
         assertEquals(new BigDecimal("194.50"), performance.getPortfolioResault());
         assertEquals(new BigDecimal("86.22"), performance.getPaidProvisions());
         assertEquals(new BigDecimal("2050.00"), performance.getLackingIncome());
     }
+
+//    @ParameterizedTest
+//    @CsvFileSource(resources = "/com/wojto/tests/calculations/resources/Test_Tax_Year_Expected.Csv", numLinesToSkip = 1, delimiter = ':')
+//    void ParameterizedCheckTaxYearTest(String stockSymbol, int isoYear, String profit) {
+//
+//        setUpForTaxYearTest();
+//
+//        // TODO Finish after adding year to .calculate() method
+//
+//    }
 
     private void checkPerformance(StockPerformance performanceOfStock, String openValue, int openAmount, String investmentResult, double earnedPercentage, String paindProvisions) {
         assertEquals(new BigDecimal(openValue), performanceOfStock.getOpenPositionValue());

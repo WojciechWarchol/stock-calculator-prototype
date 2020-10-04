@@ -5,6 +5,7 @@ import com.wojto.model.Stock;
 import com.wojto.model.Transaction;
 import com.wojto.output.consolePrinting.StockPerformancePrinter;
 
+import java.time.Year;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -36,15 +37,19 @@ public class StockPortoflio {
 
     //TODO Add Stock method
 
-    public void printPortfolioPerformance() {
+    public void printPortfolioPerformance(){
+        printPortfolioPerformance(null);
+    }
+
+    public void printPortfolioPerformance(List<Year> taxYears) {
         StockPerformance currentStockPerformance = new StockPerformance();
         PortfolioPerformance currentPortfolioPerformance = new PortfolioPerformance();
         GpwStockCalculator gpwStockCalculator = new GpwStockCalculator();
         for (Stock stock : stockList) {
-            currentStockPerformance = gpwStockCalculator.calculate(stock);
+            currentStockPerformance = gpwStockCalculator.calculate(stock, taxYears);
             StockPerformancePrinter.printAbsolutePerformanceOfStock(stock, currentStockPerformance);
         }
-        currentPortfolioPerformance = gpwStockCalculator.calculatePortfolioPerformance(this);
+        currentPortfolioPerformance = gpwStockCalculator.calculatePortfolioPerformance(this,taxYears);
         StockPerformancePrinter.printPortfolioResult(currentPortfolioPerformance);
     }
 

@@ -5,6 +5,7 @@ import com.wojto.model.*;
 import java.math.BigDecimal;
 import java.math.MathContext;
 import java.math.RoundingMode;
+import java.time.Year;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -20,7 +21,7 @@ public class GpwStockCalculator implements StockCalculator {
     public GpwStockCalculator() {}
 
     @Override
-    public StockPerformance calculate(Stock stock) {
+    public StockPerformance calculate(Stock stock, List<Year> taxYears) {
         BigDecimal closedPositionsBuyValue = BigDecimal.ZERO;
         BigDecimal closedPositionsSellValue = BigDecimal.ZERO;
         currentStockPerformance = new StockPerformance();
@@ -41,14 +42,16 @@ public class GpwStockCalculator implements StockCalculator {
                 List<Share> tempListOfSoldShares = new ArrayList<>();
                 tempListOfSoldShares.addAll(Share.createSharesFromTransaction(transaction));
                 int currentlyProcessedSoldShare = 0;
-                BigDecimal sellResault = BigDecimal.ZERO;
+                BigDecimal sellResult = BigDecimal.ZERO;
                 try {
                     while (currentlyProcessedSoldShare < tempListOfSoldShares.size()) {
                         Share ownedShare = ownedShares.get(0);
                         Share soldShare = tempListOfSoldShares.get(currentlyProcessedSoldShare);
                         closedPositionsBuyValue = closedPositionsBuyValue.add(ownedShare.getPrice());
                         closedPositionsSellValue = closedPositionsSellValue.add(soldShare.getPrice());
-                        sellResault = sellResault.subtract(ownedShare.getPrice().subtract(soldShare.getPrice()));
+                        if(taxYears == null || taxYears.contains(Year.of(transaction.getTransactionDate().getYear()))) {
+                            sellResult = sellResult.subtract(ownedShare.getPrice().subtract(soldShare.getPrice()));
+                        }
                         ownedShares.remove(0);
                         currentlyProcessedSoldShare++;
                     }
@@ -62,7 +65,7 @@ public class GpwStockCalculator implements StockCalculator {
                     currentStockPerformance.updateLackingSellsValue(lackingSellValue);
                 }
                 calculateProvisionForTransaction(transaction);
-                currentStockPerformance.updateInvestmentResault(sellResault);
+                currentStockPerformance.updateInvestmentResault(sellResult);
             }
         }
 
@@ -136,12 +139,12 @@ public class GpwStockCalculator implements StockCalculator {
 
 
     @Override
-    public PortfolioPerformance calculatePortfolioPerformance(StockPortoflio stockPortoflio) {
+    public PortfolioPerformance calculatePortfolioPerformance(StockPortoflio stockPortoflio, List<Year> taxYears) {
         PortfolioPerformance portfolioPerformance = new PortfolioPerformance();
-        StockPerformance stockPerformance = new StockPerformance();
+        StockPerformance stockPerformance;
 
         for (Stock stock : stockPortoflio.getStockList()) {
-            stockPerformance = calculate(stock);
+            stockPerformance = calculate(stock, taxYears);
             portfolioPerformance.updatePortfolioResault(stockPerformance.getInvestmenResault());
             portfolioPerformance.updatePaidProvisions(stockPerformance.getPaidProvisions());
             portfolioPerformance.updateLackingIncome(stockPerformance.getLackingSellsValue());
