@@ -1,6 +1,5 @@
 package com.wojto.model;
 
-import com.sun.xml.internal.ws.api.pipe.ServerTubeAssemblerContext;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
