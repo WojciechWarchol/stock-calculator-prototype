@@ -118,6 +118,7 @@ public class GpwStockCalculator implements StockCalculator {
         return stock.getStateOfPossesion() == StateOfPossesion.CLOSED;
     }
 
+    // TODO Provisions should take into account the year of sell
     private void calculateProvisionForTransaction(Transaction currentTransaction) {
         if (!currentTransaction.isSameDayAndTypeAs(previousTransaction)) {
             applyTempProvisionsToStockPerformance();
