@@ -19,6 +19,7 @@ public class StockPortoflio {
 
     public StockPortoflio() {}
 
+    // TODO Merge transactions from same day to sum up provision
     public void addTransaction(Transaction transaction) {
         boolean portfolioContainsStockForTransaction = false;
         for (Stock stock : stockList) {

@@ -13,10 +13,11 @@ public class GpwStockCalculator implements StockCalculator {
 
     private static MathContext precision = new MathContext(3);
 
-    private BigDecimal tempProvisionValue = BigDecimal.ZERO;
+    private BigDecimal tempProvisionValue = BigDecimal.ZERO.setScale(2, RoundingMode.HALF_UP);
     private ProvisionRate provisionRate;
     private Transaction previousTransaction;
     private StockPerformance currentStockPerformance;
+    private List<Year> taxYearsToCalculate;
 
     public GpwStockCalculator() {}
 
@@ -31,6 +32,7 @@ public class GpwStockCalculator implements StockCalculator {
 
         previousTransaction = stock.getTransactions().get(0);
         provisionRate = stock.getProvisionRate();
+        taxYearsToCalculate = taxYears;
 
         for (Transaction transaction : stock.getTransactions()) {
             transactionType = transaction.getTransactionType();
@@ -49,7 +51,7 @@ public class GpwStockCalculator implements StockCalculator {
                         Share soldShare = tempListOfSoldShares.get(currentlyProcessedSoldShare);
                         closedPositionsBuyValue = closedPositionsBuyValue.add(ownedShare.getPrice());
                         closedPositionsSellValue = closedPositionsSellValue.add(soldShare.getPrice());
-                        if(taxYears == null || taxYears.contains(Year.of(transaction.getTransactionDate().getYear()))) {
+                        if(taxYearsToCalculate == null || taxYearsToCalculate.contains(Year.of(transaction.getTransactionDate().getYear()))) {
                             sellResult = sellResult.subtract(ownedShare.getPrice().subtract(soldShare.getPrice()));
                         }
                         ownedShares.remove(0);
@@ -120,14 +122,23 @@ public class GpwStockCalculator implements StockCalculator {
 
     // TODO Provisions should take into account the year of sell
     private void calculateProvisionForTransaction(Transaction currentTransaction) {
-        if (!currentTransaction.isSameDayAndTypeAs(previousTransaction)) {
-            applyTempProvisionsToStockPerformance();
+        if (currentTransaction.getTransactionType().equals(TransactionType.SELL)) {
+            addTransactionProvisionToTempProvisionValue(currentTransaction);
+        } else if (taxYearsToCalculate != null && !taxYearsToCalculate.contains(Year.of(currentTransaction.getTransactionDate().getYear()))) {
+            subtractTransactionProvisionFromTempProvisionValue(currentTransaction);
+        } else {
+            addTransactionProvisionToTempProvisionValue(currentTransaction);
         }
-        addTransactionProvisionToTempProvisionValue(currentTransaction);
     }
 
     private void addTransactionProvisionToTempProvisionValue(Transaction currentTransaction) {
-        tempProvisionValue = tempProvisionValue.add(currentTransaction.getTotalValue().multiply(provisionRate.getRate().divide(BigDecimal.valueOf(100)))).round(precision);
+        tempProvisionValue = tempProvisionValue.add(currentTransaction.getTotalValue().multiply(provisionRate.getRate().divide(BigDecimal.valueOf(100))));
+        tempProvisionValue = tempProvisionValue.setScale(2, RoundingMode.HALF_UP);
+    }
+
+    private void subtractTransactionProvisionFromTempProvisionValue(Transaction currentTransaction) {
+        tempProvisionValue = tempProvisionValue.subtract(currentTransaction.getTotalValue().multiply(provisionRate.getRate().divide(BigDecimal.valueOf(100))));
+        tempProvisionValue = tempProvisionValue.setScale(2, RoundingMode.HALF_UP);
     }
 
     private void applyTempProvisionsToStockPerformance() {
