@@ -62,13 +62,14 @@ class GpwStockCalculatorTest {
 
     @ParameterizedTest
     @CsvFileSource(resources = "/com/wojto/tests/calculations/resources/Test_Tax_Year_Expected.Csv", numLinesToSkip = 1, delimiter = ';')
-    void ParameterizedCheckTaxYearTest(String stockSymbol, String profit) {
+    void ParameterizedCheckTaxYearTest(String stockSymbol, String profit, String provision) {
 
         setUpForTaxYearTest();
 
         StockPerformance performanceOfStock = calculator.calculate(PORTFOLIO.getStockFromSymbol(stockSymbol), TEST_YEAR);
 
         assertEquals(new BigDecimal(profit), performanceOfStock.getInvestmenResault());
+        assertEquals(new BigDecimal(provision), performanceOfStock.getPaidProvisions());
     }
 
     private void checkPerformance(StockPerformance performanceOfStock, String openValue, int openAmount, String investmentResult, double earnedPercentage, String paindProvisions) {

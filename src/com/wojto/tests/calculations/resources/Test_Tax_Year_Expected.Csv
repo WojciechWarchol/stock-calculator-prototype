@@ -1,4 +1,4 @@
-stock_name;profit_for_current_tax_year
-STOCK19-19;0
-STOCK19-20;100.00
-STOCK20-20;100.00
+stock_name;profit_for_current_tax_year;provisions_for_current_tax_year
+STOCK19-19;0;0
+STOCK19-20;100.00;7.35
+STOCK20-20;100.00;8.19
