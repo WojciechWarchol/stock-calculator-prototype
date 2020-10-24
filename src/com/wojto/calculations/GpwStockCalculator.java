@@ -122,7 +122,7 @@ public class GpwStockCalculator implements StockCalculator {
 
     // TODO Provisions should take into account the year of sell
     private void calculateProvisionForTransaction(Transaction currentTransaction) {
-        if (currentTransaction.getTransactionType().equals(TransactionType.SELL)) {
+        if (currentTransaction.getTransactionType().equals(TransactionType.BUY)) {
             addTransactionProvisionToTempProvisionValue(currentTransaction);
         } else if (taxYearsToCalculate != null && !taxYearsToCalculate.contains(Year.of(currentTransaction.getTransactionDate().getYear()))) {
             subtractTransactionProvisionFromTempProvisionValue(currentTransaction);
@@ -139,6 +139,7 @@ public class GpwStockCalculator implements StockCalculator {
     private void subtractTransactionProvisionFromTempProvisionValue(Transaction currentTransaction) {
         tempProvisionValue = tempProvisionValue.subtract(currentTransaction.getTotalValue().multiply(provisionRate.getRate().divide(BigDecimal.valueOf(100))));
         tempProvisionValue = tempProvisionValue.setScale(2, RoundingMode.HALF_UP);
+        if (tempProvisionValue.compareTo(BigDecimal.ZERO) < 0) tempProvisionValue = BigDecimal.ZERO;
     }
 
     private void applyTempProvisionsToStockPerformance() {
