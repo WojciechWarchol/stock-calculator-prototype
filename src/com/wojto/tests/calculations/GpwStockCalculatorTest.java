@@ -30,8 +30,6 @@ class GpwStockCalculatorTest {
     static protected CsvFileTransactionParser transactionParser = new CsvFileTransactionParser();
     static private final List<Year> TEST_YEAR = Arrays.asList(Year.of(2020));
 
-    //TODO Add test for testing Tax year, rewrite this class, add Expected.csv file, and write test
-
     @AfterEach
     void tearDown() {
         transactionList.clear();

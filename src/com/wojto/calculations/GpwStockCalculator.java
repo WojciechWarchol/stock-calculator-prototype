@@ -28,7 +28,7 @@ public class GpwStockCalculator implements StockCalculator {
         currentStockPerformance = new StockPerformance();
 
         TransactionType transactionType;
-        List<Share> ownedShares = new ArrayList<>();
+        List<ShareTransaction> ownedShareTransactions = new ArrayList<>();
 
         previousTransaction = stock.getTransactions().get(0);
         provisionRate = stock.getProvisionRate();
@@ -37,31 +37,31 @@ public class GpwStockCalculator implements StockCalculator {
         for (Transaction transaction : stock.getTransactions()) {
             transactionType = transaction.getTransactionType();
             if (isPurcheseTransaction(transactionType)) {
-                ownedShares.addAll(Share.createSharesFromTransaction(transaction));
+                ownedShareTransactions.addAll(ShareTransaction.createSharesFromTransaction(transaction));
 
                 calculateProvisionForTransaction(transaction);
             } else if (isSellTransaction(transactionType)) {
-                List<Share> tempListOfSoldShares = new ArrayList<>();
-                tempListOfSoldShares.addAll(Share.createSharesFromTransaction(transaction));
+                List<ShareTransaction> tempListOfSoldShareTransactions = new ArrayList<>();
+                tempListOfSoldShareTransactions.addAll(ShareTransaction.createSharesFromTransaction(transaction));
                 int currentlyProcessedSoldShare = 0;
                 BigDecimal sellResult = BigDecimal.ZERO;
                 try {
-                    while (currentlyProcessedSoldShare < tempListOfSoldShares.size()) {
-                        Share ownedShare = ownedShares.get(0);
-                        Share soldShare = tempListOfSoldShares.get(currentlyProcessedSoldShare);
-                        closedPositionsBuyValue = closedPositionsBuyValue.add(ownedShare.getPrice());
-                        closedPositionsSellValue = closedPositionsSellValue.add(soldShare.getPrice());
+                    while (currentlyProcessedSoldShare < tempListOfSoldShareTransactions.size()) {
+                        ShareTransaction ownedShareTransaction = ownedShareTransactions.get(0);
+                        ShareTransaction soldShareTransaction = tempListOfSoldShareTransactions.get(currentlyProcessedSoldShare);
+                        closedPositionsBuyValue = closedPositionsBuyValue.add(ownedShareTransaction.getPrice());
+                        closedPositionsSellValue = closedPositionsSellValue.add(soldShareTransaction.getPrice());
                         if(taxYearsToCalculate == null || taxYearsToCalculate.contains(Year.of(transaction.getTransactionDate().getYear()))) {
-                            sellResult = sellResult.subtract(ownedShare.getPrice().subtract(soldShare.getPrice()));
+                            sellResult = sellResult.subtract(ownedShareTransaction.getPrice().subtract(soldShareTransaction.getPrice()));
                         }
-                        ownedShares.remove(0);
+                        ownedShareTransactions.remove(0);
                         currentlyProcessedSoldShare++;
                     }
                 } catch (IndexOutOfBoundsException e) {
                     BigDecimal lackingSellValue = BigDecimal.ZERO;
-                    while (currentlyProcessedSoldShare < tempListOfSoldShares.size()) {
-                        Share lackingSoldShare = tempListOfSoldShares.get(currentlyProcessedSoldShare);
-                        lackingSellValue = lackingSellValue.add(lackingSoldShare.getPrice());
+                    while (currentlyProcessedSoldShare < tempListOfSoldShareTransactions.size()) {
+                        ShareTransaction lackingSoldShareTransaction = tempListOfSoldShareTransactions.get(currentlyProcessedSoldShare);
+                        lackingSellValue = lackingSellValue.add(lackingSoldShareTransaction.getPrice());
                         currentlyProcessedSoldShare++;
                     }
                     currentStockPerformance.updateLackingSellsValue(lackingSellValue);
@@ -73,10 +73,10 @@ public class GpwStockCalculator implements StockCalculator {
 
         applyTempProvisionsToStockPerformance();
 
-        currentStockPerformance.setOpenPositionAmount(ownedShares.size());
+        currentStockPerformance.setOpenPositionAmount(ownedShareTransactions.size());
         BigDecimal valueOfOpenShares = BigDecimal.ZERO;
-        for (Share share : ownedShares) {
-            valueOfOpenShares = valueOfOpenShares.add(share.getPrice());
+        for (ShareTransaction shareTransaction : ownedShareTransactions) {
+            valueOfOpenShares = valueOfOpenShares.add(shareTransaction.getPrice());
         }
         currentStockPerformance.setOpenPositionValue(valueOfOpenShares);
 

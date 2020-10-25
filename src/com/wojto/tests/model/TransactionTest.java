@@ -1,5 +1,7 @@
-package com.wojto.model;
+package com.wojto.tests.model;
 
+import com.wojto.model.Transaction;
+import com.wojto.model.TransactionType;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 

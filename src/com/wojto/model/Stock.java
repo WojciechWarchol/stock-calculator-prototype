@@ -13,6 +13,7 @@ public class Stock {
 
     private String stockName;
     private List<Transaction> transactions = new ArrayList<>();
+    private List<Position> positions = new ArrayList<>();
     private StateOfPossesion stateOfPossesion;
     private ProvisionRate provisionRate;
 
