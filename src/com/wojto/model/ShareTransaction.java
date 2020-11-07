@@ -8,11 +8,13 @@ import java.util.List;
 public class ShareTransaction implements Comparable<ShareTransaction> {
 
     private final BigDecimal price;
+    private final BigDecimal provision;
     private final LocalDateTime date;
     private final TransactionType type;
 
-    public ShareTransaction(BigDecimal price, LocalDateTime date, TransactionType type) {
+    public ShareTransaction(BigDecimal price, BigDecimal provision, LocalDateTime date, TransactionType type) {
         this.price = price;
+        this.provision = provision;
         this.date = date;
         this.type = type;
     }
@@ -20,10 +22,11 @@ public class ShareTransaction implements Comparable<ShareTransaction> {
     public static List<ShareTransaction> createSharesFromTransaction(Transaction transaction) {
         List<ShareTransaction> shareTransactions = new ArrayList<>();
         BigDecimal price = transaction.getPrice();
+        // TODO calculate provison per share
         LocalDateTime date = transaction.getTransactionDate();
         TransactionType type = transaction.getTransactionType();
         for (int i = 0 ; i < transaction.getAmount() ; i++) {
-            shareTransactions.add(new ShareTransaction(price, date, type));
+            shareTransactions.add(new ShareTransaction(price, provision, date, type ));
         }
         return shareTransactions;
     }

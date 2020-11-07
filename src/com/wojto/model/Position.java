@@ -14,7 +14,7 @@ public class Position {
     private List<ShareTransaction> boughtShareTransactions = new ArrayList<>();
     private List<ShareTransaction> soldShareTransactions = new ArrayList<>();
 
-    public Position() {};
+    public Position() {}
 
     public Position(Year taxYear) {
         this.taxYear = taxYear;
