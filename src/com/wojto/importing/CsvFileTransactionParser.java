@@ -1,32 +1,83 @@
 package com.wojto.importing;
 
 import com.wojto.calculations.StockPortoflio;
+import com.wojto.model.ProvisionRate;
 import com.wojto.model.Transaction;
 import com.wojto.model.TransactionType;
 
 import java.io.File;
 import java.math.BigDecimal;
+import java.math.RoundingMode;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 public class CsvFileTransactionParser implements TransactionParser {
 
     private static final String CSV_SEPARATOR = ";";
 
-    // TODO Generalize to StockCalculator
     @Override
     public StockPortoflio createStockPortfolio(File file) {
         StockPortoflio stockPortfolio = new StockPortoflio();
         CsvFileImporter fileImporter = new CsvFileImporter();
-        List<String> transactionsString = fileImporter.importTransactionsFromFile(file);
+        List<String> transactionsStrings = fileImporter.importTransactionsFromFile(file);
 
-        for (String transactionString : transactionsString) {
-            Transaction transaction = createTransactionFromString(transactionString);
-            stockPortfolio.addTransaction(transaction);
+        List<Transaction> transactionsList = transactionsStrings.stream().map(s -> createTransactionFromString(s)).collect(Collectors.toList());
+        Map<LocalDate, List<Transaction>> transactionsAggregatedIntoSingleDay = new HashMap<>();
+
+        for (Transaction transaction : transactionsList) {
+            transactionsAggregatedIntoSingleDay.computeIfAbsent(transaction.getTransactionDate().toLocalDate(),
+                    k -> new ArrayList<>()).add(transaction);
         }
 
+        List<Transaction> transactionListWithProvision = new ArrayList<>();
+
+        for (List<Transaction> transactionsForThisDay : transactionsAggregatedIntoSingleDay.values()) {
+            transactionsForThisDay = calculateProvisions(transactionsForThisDay);
+
+        }
+
+
         return stockPortfolio;
+    }
+
+    private List<Transaction> calculateProvisions(List<Transaction> transactions) {
+        Map<Transaction, BigDecimal> calculatedProvisions = new HashMap<>();
+
+        // TODO change the way this param is assigned
+        ProvisionRate provisionRate = new ProvisionRate.ProvisionRateBuilder().mBankGpwProvisionRate().build();
+        BigDecimal provisionRateValue = provisionRate.getRate();
+
+        BigDecimal tempTotalProvisionValue = BigDecimal.ZERO;
+        int totalShares = 0;
+        for (Transaction transaction : transactions) {
+            BigDecimal calculatedProvision = transaction.getTotalValue().multiply(provisionRateValue.divide(BigDecimal.valueOf(100)));
+            calculatedProvision = calculatedProvision.setScale(2, RoundingMode.HALF_UP);
+            transaction.setProvision(calculatedProvision);
+            tempTotalProvisionValue = tempTotalProvisionValue.add(calculatedProvision);
+            totalShares += transaction.getAmount();
+        }
+
+        if (calculatedProvisionIsBelowMinimalValue(tempTotalProvisionValue, provisionRate)) {
+            BigDecimal provisionValuePerShare = provisionRate.getMinimalProvision().divide(BigDecimal.valueOf(totalShares));
+            for (Transaction transaction : transactions) {
+                BigDecimal provisionForThisTransaction = provisionValuePerShare.multiply(BigDecimal.valueOf(transaction.getAmount()));
+                provisionForThisTransaction = provisionForThisTransaction.setScale(2, RoundingMode.HALF_UP);
+                transaction.setProvision(provisionForThisTransaction);
+            }
+        }
+
+        return transactions;
+    }
+
+    private boolean calculatedProvisionIsBelowMinimalValue(BigDecimal totalProvision, ProvisionRate provisionRate) {
+        boolean isOverMinimalValue = totalProvision.compareTo(provisionRate.getMinimalProvision()) < 0;
+        return isOverMinimalValue;
     }
 
     public Transaction createTransactionFromString(String transactionString) {

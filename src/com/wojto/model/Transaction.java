@@ -6,6 +6,7 @@ import java.util.Objects;
 
 public class Transaction implements Comparable<Transaction>{
 
+    // Parameters created from csv
     private LocalDateTime transactionDate;
     private String stockSymbol;
     private String marketSymbol;
@@ -14,7 +15,10 @@ public class Transaction implements Comparable<Transaction>{
     private BigDecimal price;
     private BigDecimal totalValue;
 
-    // DECISION Market, currency of price and total, provision
+    // Calculated parameters
+    private BigDecimal provision;
+
+// DECISION Market, currency of price and total, provision
 
     public Transaction(LocalDateTime transactionDate, String stockSymbol, String marketSymbol, TransactionType transactionType, long amount, BigDecimal price, BigDecimal totalValue) {
         this.transactionDate = transactionDate;
@@ -24,6 +28,17 @@ public class Transaction implements Comparable<Transaction>{
         this.amount = amount;
         this.price = price;
         this.totalValue = totalValue;
+    }
+
+    public Transaction(LocalDateTime transactionDate, String stockSymbol, String marketSymbol, TransactionType transactionType, long amount, BigDecimal price, BigDecimal totalValue, BigDecimal provision) {
+        this.transactionDate = transactionDate;
+        this.stockSymbol = stockSymbol;
+        this.marketSymbol = marketSymbol;
+        this.transactionType = transactionType;
+        this.amount = amount;
+        this.price = price;
+        this.totalValue = totalValue;
+        this.provision = provision;
     }
 
     public LocalDateTime getTransactionDate() {
@@ -82,6 +97,17 @@ public class Transaction implements Comparable<Transaction>{
         this.totalValue = totalValue;
     }
 
+    public BigDecimal getProvision() {
+        return provision;
+    }
+
+    public void setProvision(BigDecimal provision) {
+        this.provision = provision;
+    }
+
+    public boolean isSameDay(Transaction otherTransaciton) {
+        return this.transactionDate.toLocalDate().equals(otherTransaciton.transactionDate.toLocalDate());
+    }
 
     public boolean isSameDayAndTypeAs(Transaction otherTransaction) {
         return (this.transactionDate.toLocalDate().equals(otherTransaction.transactionDate.toLocalDate()) && this.transactionType.equals(otherTransaction.getTransactionType()));
