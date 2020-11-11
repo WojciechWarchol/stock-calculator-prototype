@@ -1,11 +1,14 @@
 package com.wojto.model;
 
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
 public class ShareTransaction implements Comparable<ShareTransaction> {
+
+    private static final int PROVISION_PER_SHARE_PRECISION = 12;
 
     private final BigDecimal price;
     private final BigDecimal provision;
@@ -24,10 +27,11 @@ public class ShareTransaction implements Comparable<ShareTransaction> {
         BigDecimal pricePerShare = transaction.getPrice();
         BigDecimal shareAmmount = BigDecimal.valueOf(transaction.getAmount());
         BigDecimal transactionProvision = transaction.getProvision();
-        BigDecimal provisionPerShare = transactionProvision.divide(shareAmmount);
         LocalDateTime date = transaction.getTransactionDate();
         TransactionType type = transaction.getTransactionType();
-        
+
+        BigDecimal provisionPerShare = transactionProvision.divide(shareAmmount, PROVISION_PER_SHARE_PRECISION, RoundingMode.HALF_UP);
+
         for (int i = 0 ; i < transaction.getAmount() ; i++) {
             shareTransactions.add(new ShareTransaction(pricePerShare, provisionPerShare, date, type ));
         }
@@ -39,6 +43,8 @@ public class ShareTransaction implements Comparable<ShareTransaction> {
         subtractionResault = price.subtract(shareTransaction.getPrice());
         return subtractionResault;
     }
+
+    public BigDecimal getProvision() { return provision; }
 
     public BigDecimal getPrice() {
         return price;
