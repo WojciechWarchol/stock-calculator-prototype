@@ -56,23 +56,39 @@ public class CsvFileTransactionParser implements TransactionParser {
         BigDecimal tempTotalProvisionValue = BigDecimal.ZERO;
         int totalShares = 0;
         for (Transaction transaction : transactions) {
-            BigDecimal calculatedProvision = transaction.getTotalValue().multiply(provisionRateValue.divide(BigDecimal.valueOf(100)));
-            calculatedProvision = calculatedProvision.setScale(2, RoundingMode.HALF_UP);
+            BigDecimal calculatedProvision = calculateProvisionForTransaction(provisionRateValue, transaction);
             transaction.setProvision(calculatedProvision);
             tempTotalProvisionValue = tempTotalProvisionValue.add(calculatedProvision);
             totalShares += transaction.getAmount();
         }
 
+        transactions = recalculateProvisionIfBelowMinimalValue(transactions, tempTotalProvisionValue, totalShares, provisionRate);
+
+        return transactions;
+    }
+
+    private List<Transaction> recalculateProvisionIfBelowMinimalValue(List<Transaction> transactions, BigDecimal tempTotalProvisionValue, int totalShares, ProvisionRate provisionRate) {
         if (calculatedProvisionIsBelowMinimalValue(tempTotalProvisionValue, provisionRate)) {
             BigDecimal provisionValuePerShare = provisionRate.getMinimalProvision().divide(BigDecimal.valueOf(totalShares));
             for (Transaction transaction : transactions) {
-                BigDecimal provisionForThisTransaction = provisionValuePerShare.multiply(BigDecimal.valueOf(transaction.getAmount()));
-                provisionForThisTransaction = provisionForThisTransaction.setScale(2, RoundingMode.HALF_UP);
+                BigDecimal provisionForThisTransaction = calculateProvisionForTransactionWhenBelowMinimal(provisionValuePerShare, transaction);
                 transaction.setProvision(provisionForThisTransaction);
             }
         }
 
         return transactions;
+    }
+
+    private BigDecimal calculateProvisionForTransaction(BigDecimal provisionRateValue, Transaction transaction) {
+        BigDecimal calculatedProvision = transaction.getTotalValue().multiply(provisionRateValue.divide(BigDecimal.valueOf(100)));
+        calculatedProvision = calculatedProvision.setScale(2, RoundingMode.HALF_UP);
+        return calculatedProvision;
+    }
+
+    private BigDecimal calculateProvisionForTransactionWhenBelowMinimal(BigDecimal provisionValuePerShare, Transaction transaction) {
+        BigDecimal provisionForThisTransaction = provisionValuePerShare.multiply(BigDecimal.valueOf(transaction.getAmount()));
+        provisionForThisTransaction = provisionForThisTransaction.setScale(2, RoundingMode.HALF_UP);
+        return provisionForThisTransaction;
     }
 
     private boolean calculatedProvisionIsBelowMinimalValue(BigDecimal totalProvision, ProvisionRate provisionRate) {
