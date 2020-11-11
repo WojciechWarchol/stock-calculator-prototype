@@ -21,12 +21,15 @@ public class ShareTransaction implements Comparable<ShareTransaction> {
 
     public static List<ShareTransaction> createSharesFromTransaction(Transaction transaction) {
         List<ShareTransaction> shareTransactions = new ArrayList<>();
-        BigDecimal price = transaction.getPrice();
-        // TODO calculate provison per share
+        BigDecimal pricePerShare = transaction.getPrice();
+        BigDecimal shareAmmount = BigDecimal.valueOf(transaction.getAmount());
+        BigDecimal transactionProvision = transaction.getProvision();
+        BigDecimal provisionPerShare = transactionProvision.divide(shareAmmount);
         LocalDateTime date = transaction.getTransactionDate();
         TransactionType type = transaction.getTransactionType();
+        
         for (int i = 0 ; i < transaction.getAmount() ; i++) {
-            shareTransactions.add(new ShareTransaction(price, provision, date, type ));
+            shareTransactions.add(new ShareTransaction(pricePerShare, provisionPerShare, date, type ));
         }
         return shareTransactions;
     }
