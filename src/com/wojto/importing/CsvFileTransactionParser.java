@@ -35,17 +35,17 @@ public class CsvFileTransactionParser implements TransactionParser {
                     k -> new ArrayList<>()).add(transaction);
         }
 
-        List<Transaction> transactionListWithProvision = new ArrayList<>();
+//        List<Transaction> transactionListWithProvision = new ArrayList<>();
 
         for (List<Transaction> transactionsForThisDay : transactionsAggregatedIntoSingleDay.values()) {
             transactionsForThisDay = calculateProvisions(transactionsForThisDay);
-
+            transactionsForThisDay.forEach(stockPortfolio::addTransaction);
         }
-
 
         return stockPortfolio;
     }
 
+    //TODO This functionality should be in a different class, maybe a service
     private List<Transaction> calculateProvisions(List<Transaction> transactions) {
         Map<Transaction, BigDecimal> calculatedProvisions = new HashMap<>();
 
