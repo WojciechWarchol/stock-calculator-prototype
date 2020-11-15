@@ -90,13 +90,14 @@ class GpwStockCalculatorTest {
     }
 
     private void fillTransactionListAndPortfolio(File file) {
-        List<String> transactionStringList = fileImporter.importTransactionsFromFile(file);
-        for (String transactionString : transactionStringList) {
-            transactionList.add(transactionParser.createTransactionFromString(transactionString));
-        }
-        for (Transaction transaction : transactionList) {
-            PORTFOLIO.addTransaction(transaction);
-        }
+        PORTFOLIO = transactionParser.createStockPortfolio(file);
+//        List<String> transactionStringList = fileImporter.importTransactionsFromFile(file);
+//        for (String transactionString : transactionStringList) {
+//            transactionList.add(transactionParser.createTransactionFromString(transactionString));
+//        }
+//        for (Transaction transaction : transactionList) {
+//            PORTFOLIO.addTransaction(transaction);
+//        }
     }
 
 }
