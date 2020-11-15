@@ -11,10 +11,7 @@ import java.math.RoundingMode;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 
 public class CsvFileTransactionParser implements TransactionParser {
@@ -28,6 +25,7 @@ public class CsvFileTransactionParser implements TransactionParser {
         List<String> transactionsStrings = fileImporter.importTransactionsFromFile(file);
 
         List<Transaction> transactionsList = transactionsStrings.stream().map(s -> createTransactionFromString(s)).collect(Collectors.toList());
+        Collections.sort(transactionsList);
         Map<LocalDate, List<Transaction>> transactionsAggregatedIntoSingleDay = new HashMap<>();
 
         for (Transaction transaction : transactionsList) {
