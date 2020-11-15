@@ -24,6 +24,10 @@ public class Position {
         this.taxYear = taxYear;
     }
 
+    public void addShareTransactionList (List<ShareTransaction> list) {
+        list.forEach(this::addShareTransaction);
+    }
+
     public void addShareTransaction (ShareTransaction share) {
         LocalDateTime tempTransactionDate = share.getDate();
         TransactionType tempTransactionType = share.getType();
