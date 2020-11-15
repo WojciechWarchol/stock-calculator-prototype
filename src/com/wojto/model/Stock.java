@@ -13,6 +13,7 @@ public class Stock {
 
     private String stockName;
     private List<Transaction> transactions = new ArrayList<>();
+    //TODO add functionality associated with positions, getting OPEN, and LACKS, assuring only one of each exists.
     private List<Position> positions = new ArrayList<>();
     private StateOfPossesion stateOfPossesion;
     private ProvisionRate provisionRate;

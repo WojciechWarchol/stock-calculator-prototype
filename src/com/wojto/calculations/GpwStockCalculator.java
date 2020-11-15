@@ -23,53 +23,86 @@ public class GpwStockCalculator implements StockCalculator {
 
     @Override
     public StockPerformance calculate(Stock stock, List<Year> taxYears) {
+        taxYearsToCalculate = taxYears;
+        provisionRate = stock.getProvisionRate();
+        currentStockPerformance = new StockPerformance();
+        List<ShareTransaction> tempShares = new ArrayList<>();
+
+        // These are probably not needed when Positions are used
         BigDecimal closedPositionsBuyValue = BigDecimal.ZERO;
         BigDecimal closedPositionsSellValue = BigDecimal.ZERO;
-        currentStockPerformance = new StockPerformance();
+        // Need to create: 1.List of closed Positions 2. An Open position 3. a LACKS position if needed
+        List<Position> closedPositions = new ArrayList<>();
+        Position openPosition = new Position();
+        Position lackingPosition = new Position();
 
-        TransactionType transactionType;
+        // Do i still need these three?
+        TransactionType currentTransactionType;
         List<ShareTransaction> ownedShareTransactions = new ArrayList<>();
-
         previousTransaction = stock.getTransactions().get(0);
-        provisionRate = stock.getProvisionRate();
-        taxYearsToCalculate = taxYears;
+
+        // Since Provisions are calculated at this point per share, calculating them is redundant.
+        // This loop should mainly separate Transactions into positions
+
+        // Calculating should be done afterwards for every position.
+        // Will probably need a PositionPerformance class
 
         for (Transaction transaction : stock.getTransactions()) {
-            transactionType = transaction.getTransactionType();
-            if (isPurcheseTransaction(transactionType)) {
-                ownedShareTransactions.addAll(ShareTransaction.createSharesFromTransaction(transaction));
+            currentTransactionType = transaction.getTransactionType();
+            tempShares.clear();
+            tempShares = ShareTransaction.createSharesFromTransaction(transaction);
 
-                calculateProvisionForTransaction(transaction);
-            } else if (isSellTransaction(transactionType)) {
-                List<ShareTransaction> tempListOfSoldShareTransactions = new ArrayList<>();
-                tempListOfSoldShareTransactions.addAll(ShareTransaction.createSharesFromTransaction(transaction));
-                int currentlyProcessedSoldShare = 0;
-                BigDecimal sellResult = BigDecimal.ZERO;
-                try {
-                    while (currentlyProcessedSoldShare < tempListOfSoldShareTransactions.size()) {
-                        ShareTransaction ownedShareTransaction = ownedShareTransactions.get(0);
-                        ShareTransaction soldShareTransaction = tempListOfSoldShareTransactions.get(currentlyProcessedSoldShare);
-                        closedPositionsBuyValue = closedPositionsBuyValue.add(ownedShareTransaction.getPrice());
-                        closedPositionsSellValue = closedPositionsSellValue.add(soldShareTransaction.getPrice());
-                        if(taxYearsToCalculate == null || taxYearsToCalculate.contains(Year.of(transaction.getTransactionDate().getYear()))) {
-                            sellResult = sellResult.subtract(ownedShareTransaction.getPrice().subtract(soldShareTransaction.getPrice()));
-                        }
-                        ownedShareTransactions.remove(0);
-                        currentlyProcessedSoldShare++;
+            if (isPurcheseTransaction(currentTransactionType)) {
+                openPosition.addShareTransactionList(tempShares);
+            } else if (isSellTransaction(currentTransactionType)) {
+                // TODO Check first Tax Year and divide Positions, after that everything works the same.
+                int sharesNeededToClose = openPosition.numberOfSharesNeededToClose();
+                if (sharesNeededToClose > 0
+                        && sharesNeededToClose >= tempShares.size()
+                        && openPosition.getTaxYear().equals(Year.from(transaction.getTransactionDate()))
+                        || openPosition.getTaxYear() == null) {
+                    openPosition.addShareTransactionList(tempShares);
+                    if (openPosition.getPositionState() == StateOfPossesion.CLOSED) {
+                        closedPositions.add(openPosition);
+                        openPosition = new Position();
                     }
-                } catch (IndexOutOfBoundsException e) {
-                    BigDecimal lackingSellValue = BigDecimal.ZERO;
-                    while (currentlyProcessedSoldShare < tempListOfSoldShareTransactions.size()) {
-                        ShareTransaction lackingSoldShareTransaction = tempListOfSoldShareTransactions.get(currentlyProcessedSoldShare);
-                        lackingSellValue = lackingSellValue.add(lackingSoldShareTransaction.getPrice());
-                        currentlyProcessedSoldShare++;
-                    }
-                    currentStockPerformance.updateLackingSellsValue(lackingSellValue);
+                } else if (sharesNeededToClose > 0
+                        && sharesNeededToClose >= tempShares.size()
+                        && !openPosition.getTaxYear().equals(Year.from(transaction.getTransactionDate()))) {
+                    // TODO divide position into two, due to tax Year change (maybe a method in position? Maybe here)
                 }
-                calculateProvisionForTransaction(transaction);
-                currentStockPerformance.updateInvestmentResault(sellResult);
+
+//                List<ShareTransaction> tempListOfSoldShareTransactions = new ArrayList<>();
+//                tempListOfSoldShareTransactions.addAll(ShareTransaction.createSharesFromTransaction(transaction));
+//                int currentlyProcessedSoldShare = 0;
+//                BigDecimal sellResult = BigDecimal.ZERO;
+//                try {
+//                    while (currentlyProcessedSoldShare < tempListOfSoldShareTransactions.size()) {
+//                        ShareTransaction ownedShareTransaction = ownedShareTransactions.get(0);
+//                        ShareTransaction soldShareTransaction = tempListOfSoldShareTransactions.get(currentlyProcessedSoldShare);
+//                        closedPositionsBuyValue = closedPositionsBuyValue.add(ownedShareTransaction.getPrice());
+//                        closedPositionsSellValue = closedPositionsSellValue.add(soldShareTransaction.getPrice());
+//                        if(taxYearsToCalculate == null || taxYearsToCalculate.contains(Year.of(transaction.getTransactionDate().getYear()))) {
+//                            sellResult = sellResult.subtract(ownedShareTransaction.getPrice().subtract(soldShareTransaction.getPrice()));
+//                        }
+//                        ownedShareTransactions.remove(0);
+//                        currentlyProcessedSoldShare++;
+//                    }
+//                } catch (IndexOutOfBoundsException e) {
+//                    BigDecimal lackingSellValue = BigDecimal.ZERO;
+//                    while (currentlyProcessedSoldShare < tempListOfSoldShareTransactions.size()) {
+//                        ShareTransaction lackingSoldShareTransaction = tempListOfSoldShareTransactions.get(currentlyProcessedSoldShare);
+//                        lackingSellValue = lackingSellValue.add(lackingSoldShareTransaction.getPrice());
+//                        currentlyProcessedSoldShare++;
+//                    }
+//                    currentStockPerformance.updateLackingSellsValue(lackingSellValue);
+//                }
+//                calculateProvisionForTransaction(transaction);
+//                currentStockPerformance.updateInvestmentResault(sellResult);
             }
         }
+
+        // Proper Calculating here
 
         applyTempProvisionsToStockPerformance();
 
@@ -80,7 +113,7 @@ public class GpwStockCalculator implements StockCalculator {
         }
         currentStockPerformance.setOpenPositionValue(valueOfOpenShares);
 
-        //TODO Maybe aggregate Transactions into POSITIONS. Sort stock performance by date
+        //TODO Sort stock performance by date
 
         double earnedPercentage;
         if (closedPositionsSellValue.equals(BigDecimal.ZERO)) {
