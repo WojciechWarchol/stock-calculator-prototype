@@ -42,29 +42,6 @@ public class Position {
         }
     }
 
-    //DECISION Assigning state should be done differently. Maybe on Share add, or maybe on getState. Now it is inconsistent.
-    public boolean doesPositionLackPurchases() {
-        boolean lacksPurchases;
-        if (boughtShareTransactions.size() < soldShareTransactions.size()) {
-            lacksPurchases = true;
-            positionState = StateOfPossesion.LACKS_PURCHESE;
-        } else {
-            lacksPurchases = false;
-            positionState = StateOfPossesion.OPEN;
-        }
-        return lacksPurchases;
-    }
-
-    public boolean isPositionClosed() {
-        boolean isClosed = false;
-        if (positionState == StateOfPossesion.OPEN && boughtShareTransactions.size() == soldShareTransactions.size()){
-            taxYear = Year.from(lastTransactionDate);
-            isClosed = true;
-            positionState = StateOfPossesion.CLOSED;
-        }
-        return isClosed;
-    }
-
     public int numberOfDaysPositionWasOpen() {
         int numberOfDays = (int)DAYS.between(firstTransactionDate,lastTransactionDate);
         return numberOfDays;
@@ -82,6 +59,17 @@ public class Position {
         return numberOfShares;
     }
 
+    public StateOfPossesion getPositionState() {
+        if (boughtShareTransactions.size() > soldShareTransactions.size()) {
+            positionState = StateOfPossesion.OPEN;
+        } else if (boughtShareTransactions.size() == soldShareTransactions.size()) {
+            positionState = StateOfPossesion.CLOSED;
+        } else {
+            positionState = StateOfPossesion.LACKS_PURCHESE;
+        }
+        return positionState;
+    }
+
     public LocalDateTime getFirstTransactionDate() {
         return firstTransactionDate;
     }
@@ -92,10 +80,6 @@ public class Position {
 
     public Year getTaxYear() {
         return taxYear;
-    }
-
-    public StateOfPossesion getPositionState() {
-        return positionState;
     }
 
     public List<ShareTransaction> getBoughtShareTransactions() {
