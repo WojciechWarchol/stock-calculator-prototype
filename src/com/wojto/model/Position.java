@@ -3,6 +3,7 @@ package com.wojto.model;
 import java.time.LocalDateTime;
 import java.time.Year;
 import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
 
 import static java.time.temporal.ChronoUnit.DAYS;
@@ -13,8 +14,8 @@ public class Position {
     private LocalDateTime lastTransactionDate;
     private Year taxYear;
     private StateOfPossesion positionState;
-    private List<ShareTransaction> boughtShareTransactions = new ArrayList<>();
-    private List<ShareTransaction> soldShareTransactions = new ArrayList<>();
+    private List<ShareTransaction> boughtShareTransactions = new LinkedList<>();
+    private List<ShareTransaction> soldShareTransactions = new LinkedList<>();
 
     public Position() {
         positionState = StateOfPossesion.OPEN;
@@ -44,6 +45,22 @@ public class Position {
             }
             if (taxYear == null) taxYear = Year.from(tempTransactionDate);
         }
+    }
+
+    public Position extractClosedTaxYearAsClosedPosition(Year newYear) {
+        Position closedTaxYearPosition = new Position(this.taxYear);
+        int closedShares = this.soldShareTransactions.size();
+
+        List<ShareTransaction> closedTaxYearPurcheseShares = new LinkedList<>();
+        for (; closedShares > 0 ; closedShares--) {
+            closedTaxYearPurcheseShares.add(((LinkedList<ShareTransaction>) boughtShareTransactions).pollFirst());
+        }
+        List<ShareTransaction> closedTaxYearSellShares = this.soldShareTransactions;
+        soldShareTransactions = new LinkedList<>();
+
+        closedTaxYearPosition.addShareTransactionList(closedTaxYearPurcheseShares);
+        closedTaxYearPosition.addShareTransactionList(closedTaxYearSellShares);
+        return closedTaxYearPosition;
     }
 
     public int numberOfDaysPositionWasOpen() {

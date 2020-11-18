@@ -48,6 +48,10 @@ class PositionTest {
         Assertions.assertEquals(StateOfPossesion.OPEN, testedPosition.getPositionState());
     }
 
+    //TODO Write test
+    @Test
+    void extractClosedTaxYearAsClosedPosition() {}
+
     @Test
     void numberOfDaysPositionWasOpen() {
         boughtShares = createPurchesedSharesList(5);

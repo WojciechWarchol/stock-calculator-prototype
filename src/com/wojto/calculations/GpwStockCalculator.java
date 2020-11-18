@@ -8,6 +8,7 @@ import java.math.RoundingMode;
 import java.time.Year;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Stack;
 
 public class GpwStockCalculator implements StockCalculator {
 
@@ -26,7 +27,7 @@ public class GpwStockCalculator implements StockCalculator {
         taxYearsToCalculate = taxYears;
         provisionRate = stock.getProvisionRate();
         currentStockPerformance = new StockPerformance();
-        List<ShareTransaction> tempShares = new ArrayList<>();
+        Stack<ShareTransaction> tempShares = new Stack<>();
 
         // These are probably not needed when Positions are used
         BigDecimal closedPositionsBuyValue = BigDecimal.ZERO;
@@ -49,28 +50,56 @@ public class GpwStockCalculator implements StockCalculator {
 
         for (Transaction transaction : stock.getTransactions()) {
             currentTransactionType = transaction.getTransactionType();
+            Year currentTransactionTaxYear = Year.from(transaction.getTransactionDate());
+
             tempShares.clear();
-            tempShares = ShareTransaction.createSharesFromTransaction(transaction);
+            tempShares = (Stack) ShareTransaction.createSharesFromTransaction(transaction);
 
             if (isPurcheseTransaction(currentTransactionType)) {
                 openPosition.addShareTransactionList(tempShares);
             } else if (isSellTransaction(currentTransactionType)) {
-                // TODO Check first Tax Year and divide Positions, after that everything works the same.
-                int sharesNeededToClose = openPosition.numberOfSharesNeededToClose();
-                if (sharesNeededToClose > 0
-                        && sharesNeededToClose >= tempShares.size()
-                        && openPosition.getTaxYear().equals(Year.from(transaction.getTransactionDate()))
-                        || openPosition.getTaxYear() == null) {
-                    openPosition.addShareTransactionList(tempShares);
-                    if (openPosition.getPositionState() == StateOfPossesion.CLOSED) {
+                if (openPosition.getTaxYear().equals(currentTransactionTaxYear) || openPosition.getTaxYear() == null) {
+                    int sharesNeededToClose = openPosition.numberOfSharesNeededToClose();
+
+                    List<ShareTransaction> nonLackingSellShareTransactions = new ArrayList<>();
+                    for (; sharesNeededToClose > 0; sharesNeededToClose--) {
+                        nonLackingSellShareTransactions.add(tempShares.pop());
+                    }
+
+                    openPosition.addShareTransactionList(nonLackingSellShareTransactions);
+
+                    if (sharesNeededToClose == 0 && openPosition.getPositionState() == StateOfPossesion.CLOSED) {
+
                         closedPositions.add(openPosition);
                         openPosition = new Position();
+
+                        if (!tempShares.empty()) {
+                            List<ShareTransaction> lackingSellShareTransactions = new ArrayList<>();
+                            for (; sharesNeededToClose > 0; sharesNeededToClose--) {
+                                lackingSellShareTransactions.add(tempShares.pop());
+                            }
+                            lackingPosition.addShareTransactionList(lackingSellShareTransactions);
+                        }
                     }
-                } else if (sharesNeededToClose > 0
-                        && sharesNeededToClose >= tempShares.size()
-                        && !openPosition.getTaxYear().equals(Year.from(transaction.getTransactionDate()))) {
-                    // TODO divide position into two, due to tax Year change (maybe a method in position? Maybe here)
+                } else if (openPosition.getTaxYear().compareTo(currentTransactionTaxYear) < 0) {
+                    //TODO just created divide method for Position, continue here. Extract closed tax year position and assign transaction shares to new Open position
                 }
+
+
+
+//                if (sharesNeededToClose > 0
+//                        && sharesNeededToClose >= tempShares.size()
+//                        && openPosition.getTaxYear().equals(Year.from(transaction.getTransactionDate()))
+//                        || openPosition.getTaxYear() == null) {
+//                    openPosition.addShareTransactionList(tempShares);
+//                    if (openPosition.getPositionState() == StateOfPossesion.CLOSED) {
+//                        closedPositions.add(openPosition);
+//                        openPosition = new Position();
+//                    }
+//                } else if (sharesNeededToClose > 0
+//                        && sharesNeededToClose >= tempShares.size()
+//                        && !openPosition.getTaxYear().equals(Year.from(transaction.getTransactionDate()))) {
+                    // TODO divide position into two, due to tax Year change (maybe a method in position? Maybe here)
 
 //                List<ShareTransaction> tempListOfSoldShareTransactions = new ArrayList<>();
 //                tempListOfSoldShareTransactions.addAll(ShareTransaction.createSharesFromTransaction(transaction));
