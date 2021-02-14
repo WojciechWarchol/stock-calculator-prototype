@@ -2,7 +2,6 @@ package com.wojto.model;
 
 import java.time.LocalDateTime;
 import java.time.Year;
-import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -47,7 +46,7 @@ public class Position {
         }
     }
 
-    public Position extractClosedTaxYearAsClosedPosition(Year newYear) {
+    public Position extractClosedTaxYearAsClosedPosition(Year newTaxYear) {
         Position closedTaxYearPosition = new Position(this.taxYear);
         int closedShares = this.soldShareTransactions.size();
 
@@ -60,6 +59,9 @@ public class Position {
 
         closedTaxYearPosition.addShareTransactionList(closedTaxYearPurcheseShares);
         closedTaxYearPosition.addShareTransactionList(closedTaxYearSellShares);
+
+        this.taxYear = newTaxYear;
+
         return closedTaxYearPosition;
     }
 

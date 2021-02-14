@@ -45,12 +45,29 @@ class PositionTest {
         assertEquals(PURCHESE_DATE_1, testedPosition.getFirstTransactionDate());
         assertEquals(SELL_DATE_1, testedPosition.getLastTransactionDate());
         assertEquals(Year.of(2020),testedPosition.getTaxYear());
-        Assertions.assertEquals(StateOfPossesion.OPEN, testedPosition.getPositionState());
+        assertEquals(StateOfPossesion.OPEN, testedPosition.getPositionState());
     }
 
-    //TODO Write test
     @Test
-    void extractClosedTaxYearAsClosedPosition() {}
+    void extractClosedTaxYearAsClosedPosition() {
+        boughtShares = createPurchesedSharesList(20);
+        soldShares = createSoldSharesList(10);
+        addSharesListToTestedPosition(boughtShares);
+        addSharesListToTestedPosition(soldShares);
+        Year newTaxYear = Year.of(2021);
+
+        Position positionClosedDueToTaxYearChange = testedPosition.extractClosedTaxYearAsClosedPosition(newTaxYear);
+
+        assertEquals(10, positionClosedDueToTaxYearChange.getBoughtShareTransactions().size());
+        assertEquals(10, positionClosedDueToTaxYearChange.getSoldShareTransactions().size());
+        assertEquals(StateOfPossesion.CLOSED, positionClosedDueToTaxYearChange.getPositionState());
+        assertEquals(Year.from(SELL_DATE_1), positionClosedDueToTaxYearChange.getTaxYear());
+
+        assertEquals(10, testedPosition.getBoughtShareTransactions().size());
+        assertEquals(0,testedPosition.getSoldShareTransactions().size());
+        assertEquals(StateOfPossesion.OPEN, testedPosition.getPositionState());
+        assertEquals(newTaxYear, testedPosition.getTaxYear());
+    }
 
     @Test
     void numberOfDaysPositionWasOpen() {
