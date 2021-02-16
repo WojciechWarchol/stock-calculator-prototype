@@ -7,10 +7,8 @@ import java.math.MathContext;
 import java.math.RoundingMode;
 import java.time.Year;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Stack;
 
 public class GpwStockCalculator implements StockCalculator {
 
@@ -41,8 +39,8 @@ public class GpwStockCalculator implements StockCalculator {
 
         // Do i still need these three?
         TransactionType currentTransactionType;
-        List<ShareTransaction> ownedShareTransactions = new ArrayList<>();
-        previousTransaction = stock.getTransactions().get(0);
+//        List<ShareTransaction> ownedShareTransactions = new ArrayList<>();
+//        previousTransaction = stock.getTransactions().get(0);
 
         // Since Provisions are calculated at this point per share, calculating them is redundant.
         // This loop should mainly separate Transactions into positions
@@ -96,17 +94,24 @@ public class GpwStockCalculator implements StockCalculator {
                 }
             }
         }
+        // DECISION Adding positions, and than calculating on them is a bit sketchy
+        stock.addPosition(lackingPosition);
+        stock.addPosition(closedPositions);
+        stock.addPosition(openPosition);
 
         // TODO Proper Calculating here - PRIORITY
-
-        applyTempProvisionsToStockPerformance();
-
-        currentStockPerformance.setOpenPositionAmount(ownedShareTransactions.size());
-        BigDecimal valueOfOpenShares = BigDecimal.ZERO;
-        for (ShareTransaction shareTransaction : ownedShareTransactions) {
-            valueOfOpenShares = valueOfOpenShares.add(shareTransaction.getPrice());
+        for (Position position : stock.getPositions()) {
+            processPositionAndAddToStockPerformance(position);
         }
-        currentStockPerformance.setOpenPositionValue(valueOfOpenShares);
+
+//        applyTempProvisionsToStockPerformance();
+
+//        currentStockPerformance.setOpenPositionAmount(ownedShareTransactions.size());
+//        BigDecimal valueOfOpenShares = BigDecimal.ZERO;
+//        for (ShareTransaction shareTransaction : ownedShareTransactions) {
+//            valueOfOpenShares = valueOfOpenShares.add(shareTransaction.getPrice());
+//        }
+//        currentStockPerformance.setOpenPositionValue(valueOfOpenShares);
 
         //TODO Sort stock performance by date
 
@@ -126,6 +131,57 @@ public class GpwStockCalculator implements StockCalculator {
 
         currentStockPerformance.setEarnedPercent(earnedPercentage);
         return currentStockPerformance;
+    }
+
+    private void processPositionAndAddToStockPerformance(Position position) {
+        BigDecimal purcheseSum = BigDecimal.ZERO;
+        BigDecimal sellSum = BigDecimal.ZERO;
+        BigDecimal paidProvisionSum = BigDecimal.ZERO;
+
+        LinkedList<ShareTransaction> boughtShareTransactions = (LinkedList<ShareTransaction>) position.getBoughtShareTransactions();
+        LinkedList<ShareTransaction> soldShareTransactions = (LinkedList<ShareTransaction>) position.getSoldShareTransactions();
+        LinkedList<ShareTransaction> boughtAndSoldShareTransactions = new LinkedList<>();
+
+        if (boughtShareTransactions.size() > soldShareTransactions.size()) {
+            for (int soldSharesLeft = soldShareTransactions.size(); soldSharesLeft > 0; soldSharesLeft--) {
+                boughtAndSoldShareTransactions.add(boughtShareTransactions.pollFirst());
+            }
+        } else if (boughtShareTransactions.size() == soldShareTransactions.size()) {
+            boughtAndSoldShareTransactions = boughtShareTransactions;
+            boughtShareTransactions = new LinkedList<>();
+        }
+
+        for (ShareTransaction shareTransaction : boughtAndSoldShareTransactions) {
+            purcheseSum = purcheseSum.add(shareTransaction.getPrice());
+            paidProvisionSum = paidProvisionSum.add(shareTransaction.getProvision());
+        }
+        for (ShareTransaction shareTransaction : soldShareTransactions) {
+            sellSum = sellSum.add(shareTransaction.getPrice());
+            paidProvisionSum = paidProvisionSum.add(shareTransaction.getProvision());
+        }
+
+        BigDecimal positionResault = sellSum.subtract(purcheseSum);
+
+        StateOfPossesion positionState = position.getPositionState();
+        if (positionState.equals(StateOfPossesion.CLOSED)) {
+            currentStockPerformance.updateInvestmentResault(positionResault);
+            currentStockPerformance.updatePaidProvisions(paidProvisionSum);
+        } else if (positionState.equals(StateOfPossesion.OPEN)) {
+            BigDecimal stillOpenSum = BigDecimal.ZERO;
+            for (ShareTransaction shareTransaction : boughtShareTransactions) {
+                stillOpenSum = stillOpenSum.add(shareTransaction.getPrice());
+                // DECISION calculate paid provisions now, or on position close?
+                paidProvisionSum = paidProvisionSum.add(shareTransaction.getProvision());
+            }
+            // TODO Create na "updates" method (though it might be redundant since there should be only one Open position, and there should always be recalculation
+            currentStockPerformance.setOpenPositionValue(stillOpenSum);
+            currentStockPerformance.setOpenPositionAmount(boughtShareTransactions.size());
+            currentStockPerformance.updateInvestmentResault(positionResault);
+            currentStockPerformance.updatePaidProvisions(paidProvisionSum);
+        }
+        if (position.getPositionState().equals(StateOfPossesion.LACKS_PURCHESE)) {
+            currentStockPerformance.updateLackingSellsValue(positionResault);
+        }
     }
 
     private boolean isLacking(Stock stock) {

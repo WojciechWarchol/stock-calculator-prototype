@@ -13,11 +13,12 @@ public class Stock {
 
     private String stockName;
     private List<Transaction> transactions = new ArrayList<>();
+
     //TODO add functionality associated with positions, getting OPEN, and LACKS, assuring only one of each exists.
+
     private List<Position> positions = new ArrayList<>();
     private StateOfPossesion stateOfPossesion;
     private ProvisionRate provisionRate;
-
     public Stock(String stockName, List<Transaction> transactions, StateOfPossesion stateOfPossesion) {
         this.stockName = stockName;
         this.transactions = transactions;
@@ -57,6 +58,21 @@ public class Stock {
         }
 
         stateOfPossesion = checkStateOfPossesion();
+    }
+
+    public List<Position> getPositions() {
+        return positions;
+    }
+
+    public void addPosition(List<Position> positions) {
+        for (Position position : positions) {
+            addPosition(position);
+        }
+    }
+
+    // DECISION maybe only one open and lacks position should exist?
+    public void addPosition(Position position) {
+        positions.add(position);
     }
 
     private ProvisionRate determineProvisionRateForStock(String marketSymbol) {

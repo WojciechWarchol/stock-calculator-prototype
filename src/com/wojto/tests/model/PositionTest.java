@@ -4,7 +4,6 @@ import com.wojto.model.Position;
 import com.wojto.model.ShareTransaction;
 import com.wojto.model.StateOfPossesion;
 import com.wojto.model.TransactionType;
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
