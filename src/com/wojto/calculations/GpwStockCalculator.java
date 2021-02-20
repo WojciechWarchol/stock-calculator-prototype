@@ -20,6 +20,10 @@ public class GpwStockCalculator implements StockCalculator {
     private StockPerformance currentStockPerformance;
     private List<Year> taxYearsToCalculate;
 
+    // Temporary solution before these can be taken straight from Positions
+    private BigDecimal totalPurchesedAndClosedValue = BigDecimal.ZERO;
+    private BigDecimal totalSoldValue = BigDecimal.ZERO;
+
     public GpwStockCalculator() {}
 
     @Override
@@ -27,11 +31,10 @@ public class GpwStockCalculator implements StockCalculator {
         taxYearsToCalculate = taxYears;
         provisionRate = stock.getProvisionRate();
         currentStockPerformance = new StockPerformance();
+        totalPurchesedAndClosedValue = BigDecimal.ZERO;
+        totalSoldValue = BigDecimal.ZERO;
         LinkedList<ShareTransaction> tempShares = new LinkedList<>();
 
-        // These are probably not needed when Positions are used
-        BigDecimal closedPositionsBuyValue = BigDecimal.ZERO;
-        BigDecimal closedPositionsSellValue = BigDecimal.ZERO;
         // Need to create: 1.List of closed Positions 2. An Open position 3. a LACKS position if needed
         List<Position> closedPositions = new ArrayList<>();
         Position openPosition = new Position();
@@ -116,12 +119,12 @@ public class GpwStockCalculator implements StockCalculator {
         //TODO Sort stock performance by date
 
         double earnedPercentage;
-        if (closedPositionsSellValue.equals(BigDecimal.ZERO)) {
+        if (totalSoldValue.equals(BigDecimal.ZERO)) {
             earnedPercentage = 0.00;
         } else {
             try {
-                BigDecimal calcStep = closedPositionsSellValue.multiply(new BigDecimal("100"));
-                calcStep = calcStep.divide(closedPositionsBuyValue, 2, RoundingMode.HALF_UP);
+                BigDecimal calcStep = totalSoldValue.multiply(new BigDecimal("100"));
+                calcStep = calcStep.divide(totalPurchesedAndClosedValue, 2, RoundingMode.HALF_UP);
                 calcStep = calcStep.subtract(new BigDecimal("100"));
                 earnedPercentage = calcStep.doubleValue();
             } catch (ArithmeticException e) {
@@ -160,11 +163,14 @@ public class GpwStockCalculator implements StockCalculator {
             paidProvisionSum = paidProvisionSum.add(shareTransaction.getProvision());
         }
 
-        BigDecimal positionResault = sellSum.subtract(purcheseSum);
+        paidProvisionSum = paidProvisionSum.setScale(2, RoundingMode.HALF_UP);
+        totalPurchesedAndClosedValue = totalPurchesedAndClosedValue.add(purcheseSum);
+        totalSoldValue = totalSoldValue.add(sellSum);
+        BigDecimal positionResult = sellSum.subtract(purcheseSum);
 
         StateOfPossesion positionState = position.getPositionState();
         if (positionState.equals(StateOfPossesion.CLOSED)) {
-            currentStockPerformance.updateInvestmentResault(positionResault);
+            currentStockPerformance.updateInvestmentResault(positionResult);
             currentStockPerformance.updatePaidProvisions(paidProvisionSum);
         } else if (positionState.equals(StateOfPossesion.OPEN)) {
             BigDecimal stillOpenSum = BigDecimal.ZERO;
@@ -176,11 +182,11 @@ public class GpwStockCalculator implements StockCalculator {
             // TODO Create na "updates" method (though it might be redundant since there should be only one Open position, and there should always be recalculation
             currentStockPerformance.setOpenPositionValue(stillOpenSum);
             currentStockPerformance.setOpenPositionAmount(boughtShareTransactions.size());
-            currentStockPerformance.updateInvestmentResault(positionResault);
+            currentStockPerformance.updateInvestmentResault(positionResult);
             currentStockPerformance.updatePaidProvisions(paidProvisionSum);
         }
         if (position.getPositionState().equals(StateOfPossesion.LACKS_PURCHESE)) {
-            currentStockPerformance.updateLackingSellsValue(positionResault);
+            currentStockPerformance.updateLackingSellsValue(positionResult);
         }
     }
 
