@@ -4,6 +4,7 @@ import com.wojto.calculations.StockPortoflio;
 import com.wojto.model.ProvisionRate;
 import com.wojto.model.Transaction;
 import com.wojto.model.TransactionType;
+import org.javatuples.Pair;
 
 import java.io.File;
 import java.math.BigDecimal;
@@ -26,10 +27,10 @@ public class CsvFileTransactionParser implements TransactionParser {
 
         List<Transaction> transactionsList = transactionsStrings.stream().map(s -> createTransactionFromString(s)).collect(Collectors.toList());
         Collections.sort(transactionsList);
-        Map<LocalDate, List<Transaction>> transactionsAggregatedIntoSingleDay = new HashMap<>();
+        Map<Pair<String, LocalDate>, List<Transaction>> transactionsAggregatedIntoSingleDay = new HashMap<>();
 
         for (Transaction transaction : transactionsList) {
-            transactionsAggregatedIntoSingleDay.computeIfAbsent(transaction.getTransactionDate().toLocalDate(),
+            transactionsAggregatedIntoSingleDay.computeIfAbsent(Pair.with(transaction.getStockSymbol(),transaction.getTransactionDate().toLocalDate()),
                     k -> new ArrayList<>()).add(transaction);
         }
 

@@ -40,16 +40,7 @@ public class GpwStockCalculator implements StockCalculator {
         Position openPosition = new Position();
         Position lackingPosition = new Position();
 
-        // Do i still need these three?
         TransactionType currentTransactionType;
-//        List<ShareTransaction> ownedShareTransactions = new ArrayList<>();
-//        previousTransaction = stock.getTransactions().get(0);
-
-        // Since Provisions are calculated at this point per share, calculating them is redundant.
-        // This loop should mainly separate Transactions into positions
-
-        // Calculating should be done afterwards for every position.
-        // Will probably need a PositionPerformance class
 
         for (Transaction transaction : stock.getTransactions()) {
             currentTransactionType = transaction.getTransactionType();
@@ -107,15 +98,6 @@ public class GpwStockCalculator implements StockCalculator {
             processPositionAndAddToStockPerformance(position);
         }
 
-//        applyTempProvisionsToStockPerformance();
-
-//        currentStockPerformance.setOpenPositionAmount(ownedShareTransactions.size());
-//        BigDecimal valueOfOpenShares = BigDecimal.ZERO;
-//        for (ShareTransaction shareTransaction : ownedShareTransactions) {
-//            valueOfOpenShares = valueOfOpenShares.add(shareTransaction.getPrice());
-//        }
-//        currentStockPerformance.setOpenPositionValue(valueOfOpenShares);
-
         //TODO Sort stock performance by date
 
         double earnedPercentage;
@@ -145,6 +127,7 @@ public class GpwStockCalculator implements StockCalculator {
         LinkedList<ShareTransaction> soldShareTransactions = (LinkedList<ShareTransaction>) position.getSoldShareTransactions();
         LinkedList<ShareTransaction> boughtAndSoldShareTransactions = new LinkedList<>();
 
+        //TODO Transform to use numberOfSharesNeededToClose() method and extract the purchese and sell sums directly from Position
         if (boughtShareTransactions.size() > soldShareTransactions.size()) {
             for (int soldSharesLeft = soldShareTransactions.size(); soldSharesLeft > 0; soldSharesLeft--) {
                 boughtAndSoldShareTransactions.add(boughtShareTransactions.pollFirst());
@@ -180,6 +163,8 @@ public class GpwStockCalculator implements StockCalculator {
                 paidProvisionSum = paidProvisionSum.add(shareTransaction.getProvision());
             }
             // TODO Create na "updates" method (though it might be redundant since there should be only one Open position, and there should always be recalculation
+            paidProvisionSum = paidProvisionSum.setScale(2, RoundingMode.HALF_UP);
+
             currentStockPerformance.setOpenPositionValue(stillOpenSum);
             currentStockPerformance.setOpenPositionAmount(boughtShareTransactions.size());
             currentStockPerformance.updateInvestmentResault(positionResult);
