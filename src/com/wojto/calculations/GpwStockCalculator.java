@@ -123,8 +123,8 @@ public class GpwStockCalculator implements StockCalculator {
         BigDecimal sellSum = BigDecimal.ZERO;
         BigDecimal paidProvisionSum = BigDecimal.ZERO;
 
-        LinkedList<ShareTransaction> boughtShareTransactions = (LinkedList<ShareTransaction>) position.getBoughtShareTransactions();
-        LinkedList<ShareTransaction> soldShareTransactions = (LinkedList<ShareTransaction>) position.getSoldShareTransactions();
+        LinkedList<ShareTransaction> boughtShareTransactions = new LinkedList<>(position.getBoughtShareTransactions());
+        LinkedList<ShareTransaction> soldShareTransactions = new LinkedList<>(position.getSoldShareTransactions());
         LinkedList<ShareTransaction> boughtAndSoldShareTransactions = new LinkedList<>();
 
         //TODO Transform to use numberOfSharesNeededToClose() method and extract the purchese and sell sums directly from Position
