@@ -119,6 +119,11 @@ public class GpwStockCalculator implements StockCalculator {
     }
 
     private void processPositionAndAddToStockPerformance(Position position) {
+        // TODO Not satisfied that I calculate Open positions just because they have a null tax year. Might be prone to error.
+        if (position.getTaxYear() != null && !taxYearsToCalculate.contains(position.getTaxYear())){
+            return;
+        }
+
         BigDecimal purcheseSum = BigDecimal.ZERO;
         BigDecimal sellSum = BigDecimal.ZERO;
         BigDecimal paidProvisionSum = BigDecimal.ZERO;
@@ -158,7 +163,7 @@ public class GpwStockCalculator implements StockCalculator {
             BigDecimal stillOpenSum = BigDecimal.ZERO;
             for (ShareTransaction shareTransaction : boughtShareTransactions) {
                 stillOpenSum = stillOpenSum.add(shareTransaction.getPrice());
-                // DECISION calculate paid provisions now, or on position close?
+                // DECISION calculate paid provisions now, or on position close? Some Kind of flag maybe?
                 paidProvisionSum = paidProvisionSum.add(shareTransaction.getProvision());
             }
             // TODO Create na "updates" method (though it might be redundant since there should be only one Open position, and there should always be recalculation
