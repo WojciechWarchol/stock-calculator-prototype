@@ -71,7 +71,7 @@ public class GpwStockCalculator implements StockCalculator {
                     openPosition.addShareTransactionList(nonLackingSellShareTransactions);
 
                     // Close the position if all purchases have a sell
-                    if (sharesNeededToClose == 0 && openPosition.getPositionState() == StateOfPossesion.CLOSED) {
+                    if (sharesNeededToClose == 0 && isClosed(openPosition)) {
 
                         closedPositions.add(openPosition);
                         openPosition = new Position();
@@ -151,11 +151,10 @@ public class GpwStockCalculator implements StockCalculator {
         totalSoldValue = totalSoldValue.add(sellSum);
         BigDecimal positionResult = sellSum.subtract(purcheseSum);
 
-        StateOfPossesion positionState = position.getPositionState();
-        if (positionState.equals(StateOfPossesion.CLOSED)) {
+        if (isClosed(position)) {
             currentStockPerformance.updateInvestmentResault(positionResult);
             currentStockPerformance.updatePaidProvisions(paidProvisionSum);
-        } else if (positionState.equals(StateOfPossesion.OPEN)) {
+        } else if (isOpen(position)) {
             BigDecimal stillOpenSum = BigDecimal.ZERO;
             for (ShareTransaction shareTransaction : boughtShareTransactions) {
                 stillOpenSum = stillOpenSum.add(shareTransaction.getPrice());
@@ -170,17 +169,21 @@ public class GpwStockCalculator implements StockCalculator {
             currentStockPerformance.updateInvestmentResault(positionResult);
             currentStockPerformance.updatePaidProvisions(paidProvisionSum);
         }
-        if (position.getPositionState().equals(StateOfPossesion.LACKS_PURCHESE)) {
+        if (isLacking(position)) {
             currentStockPerformance.updateLackingSellsValue(positionResult);
         }
     }
 
-    private boolean isLacking(Stock stock) {
-        return stock.getStateOfPossesion() == StateOfPossesion.LACKS_PURCHESE;
+    private boolean isLacking(Position position) {
+        return position.getPositionState().equals(StateOfPossesion.LACKS_PURCHESE);
     }
 
-    private boolean isOpen(Stock stock) {
-        return stock.getStateOfPossesion() == StateOfPossesion.OPEN;
+    private boolean isOpen(Position position) {
+        return position.getPositionState().equals(StateOfPossesion.OPEN);
+    }
+
+    private boolean isClosed(Position position) {
+        return position.getPositionState().equals(StateOfPossesion.CLOSED);
     }
 
     private boolean isSellTransaction(TransactionType transactionType) {
@@ -190,41 +193,6 @@ public class GpwStockCalculator implements StockCalculator {
     private boolean isPurcheseTransaction(TransactionType transactionType) {
         return transactionType == TransactionType.BUY;
     }
-
-    private boolean isClosed(Stock stock) {
-        return stock.getStateOfPossesion() == StateOfPossesion.CLOSED;
-    }
-
-    // TODO temp solution applied. final solution should be based on POSITIONS
-    private void calculateProvisionForTransaction(Transaction currentTransaction) {
-        if (currentTransaction.getTransactionType().equals(TransactionType.BUY)) {
-            addTransactionProvisionToTempProvisionValue(currentTransaction);
-        } else if (taxYearsToCalculate != null && !taxYearsToCalculate.contains(Year.of(currentTransaction.getTransactionDate().getYear()))) {
-            subtractTransactionProvisionFromTempProvisionValue(currentTransaction);
-        } else {
-            addTransactionProvisionToTempProvisionValue(currentTransaction);
-        }
-    }
-
-    private void addTransactionProvisionToTempProvisionValue(Transaction currentTransaction) {
-        tempProvisionValue = tempProvisionValue.add(currentTransaction.getTotalValue().multiply(provisionRate.getRate().divide(BigDecimal.valueOf(100))));
-        tempProvisionValue = tempProvisionValue.setScale(2, RoundingMode.HALF_UP);
-    }
-
-    private void subtractTransactionProvisionFromTempProvisionValue(Transaction currentTransaction) {
-        tempProvisionValue = tempProvisionValue.subtract(currentTransaction.getTotalValue().multiply(provisionRate.getRate().divide(BigDecimal.valueOf(100))));
-        tempProvisionValue = tempProvisionValue.setScale(2, RoundingMode.HALF_UP);
-        if (tempProvisionValue.compareTo(BigDecimal.ZERO) < 0) tempProvisionValue = BigDecimal.ZERO;
-    }
-
-    private void applyTempProvisionsToStockPerformance() {
-        if (tempProvisionValue.compareTo(provisionRate.getMinimalProvision()) < 0) {
-            tempProvisionValue = provisionRate.getMinimalProvision();
-        }
-        currentStockPerformance.updatePaidProvisions(tempProvisionValue);
-        tempProvisionValue = BigDecimal.ZERO;
-    }
-
 
     @Override
     public PortfolioPerformance calculatePortfolioPerformance(StockPortoflio stockPortoflio, List<Year> taxYears) {
