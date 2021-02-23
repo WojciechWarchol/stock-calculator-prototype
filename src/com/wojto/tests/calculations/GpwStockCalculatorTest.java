@@ -26,7 +26,6 @@ class GpwStockCalculatorTest {
     static protected List<Transaction> transactionList = new ArrayList<>();
     static protected GpwStockCalculator calculator = new GpwStockCalculator();
     static protected StockPortoflio PORTFOLIO = new StockPortoflio();
-    static protected CsvFileImporter fileImporter = new CsvFileImporter();
     static protected CsvFileTransactionParser transactionParser = new CsvFileTransactionParser();
     static private final List<Year> TEST_YEAR = Arrays.asList(Year.of(2020));
 
@@ -54,7 +53,7 @@ class GpwStockCalculatorTest {
 
         PortfolioPerformance performance = calculator.calculatePortfolioPerformance(PORTFOLIO, TEST_YEAR);
         assertEquals(new BigDecimal("194.50"), performance.getPortfolioResault());
-        assertEquals(new BigDecimal("86.22"), performance.getPaidProvisions());
+        assertEquals(new BigDecimal("78.23"), performance.getPaidProvisions());
         assertEquals(new BigDecimal("2050.00"), performance.getLackingIncome());
     }
 
@@ -91,13 +90,6 @@ class GpwStockCalculatorTest {
 
     private void fillTransactionListAndPortfolio(File file) {
         PORTFOLIO = transactionParser.createStockPortfolio(file);
-//        List<String> transactionStringList = fileImporter.importTransactionsFromFile(file);
-//        for (String transactionString : transactionStringList) {
-//            transactionList.add(transactionParser.createTransactionFromString(transactionString));
-//        }
-//        for (Transaction transaction : transactionList) {
-//            PORTFOLIO.addTransaction(transaction);
-//        }
     }
 
 }
