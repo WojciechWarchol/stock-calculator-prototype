@@ -93,6 +93,11 @@ public class Position {
         return positionState;
     }
 
+    public boolean hasAnyShareTransactions() {
+        boolean anyShareTransactions = boughtShareTransactions.size() > 0 && soldShareTransactions.size() > 0;
+        return anyShareTransactions;
+    }
+
     public LocalDateTime getFirstTransactionDate() {
         return firstTransactionDate;
     }

@@ -71,23 +71,24 @@ public class GpwStockCalculator implements StockCalculator {
                     openPosition.addShareTransactionList(nonLackingSellShareTransactions);
 
                     // Close the position if all purchases have a sell
-                    if (sharesNeededToClose == 0 && isClosed(openPosition)) {
+                    if (sharesNeededToClose == 0 && isClosed(openPosition) && openPosition.hasAnyShareTransactions()) {
 
                         closedPositions.add(openPosition);
                         openPosition = new Position();
+                    }
 
-                        // If all purchases have been close, an there are still sells, add them to lackingPosition
-                        if (!tempShares.isEmpty()) {
-                            List<ShareTransaction> lackingSellShareTransactions = new ArrayList<>();
-                            for (; sharesNeededToClose > 0; sharesNeededToClose--) {
-                                lackingSellShareTransactions.add(tempShares.pop());
-                            }
-                            lackingPosition.addShareTransactionList(lackingSellShareTransactions);
+                    // If all purchases have been close, an there are still sells, add them to lackingPosition
+                    if (!tempShares.isEmpty()) {
+                        List<ShareTransaction> lackingSellShareTransactions = new ArrayList<>();
+                        while (tempShares.size() > 0) {
+                            lackingSellShareTransactions.add(tempShares.pop());
                         }
+                        lackingPosition.addShareTransactionList(lackingSellShareTransactions);
                     }
                 }
             }
         }
+        lackingPosition.getPositionState();
         // DECISION Adding positions, and than calculating on them is a bit sketchy
         stock.addPosition(lackingPosition);
         stock.addPosition(closedPositions);
@@ -153,7 +154,9 @@ public class GpwStockCalculator implements StockCalculator {
 
         paidProvisionSum = paidProvisionSum.setScale(2, RoundingMode.HALF_UP);
         totalPurchesedAndClosedValue = totalPurchesedAndClosedValue.add(purcheseSum);
-        totalSoldValue = totalSoldValue.add(sellSum);
+        if (!isLacking(position)) {
+            totalSoldValue = totalSoldValue.add(sellSum);
+        }
         BigDecimal positionResult = sellSum.subtract(purcheseSum);
 
         if (isClosed(position)) {
