@@ -4,7 +4,6 @@ import com.wojto.calculations.GpwStockCalculator;
 import com.wojto.calculations.PortfolioPerformance;
 import com.wojto.calculations.StockPerformance;
 import com.wojto.calculations.StockPortoflio;
-import com.wojto.importing.CsvFileImporter;
 import com.wojto.importing.CsvFileTransactionParser;
 import com.wojto.model.Transaction;
 import org.junit.jupiter.api.AfterEach;
@@ -78,7 +77,6 @@ class GpwStockCalculatorTest {
     }
 
     void setUpForCalculationAndPerformanceTest() {
-        //TODO Test should also use previous years that will not be calculated
         File file = new File(".\\resources\\Tests\\Test_Transactions_Calculator.Csv");
         fillTransactionListAndPortfolio(file);
     }
