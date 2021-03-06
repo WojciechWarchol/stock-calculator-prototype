@@ -68,7 +68,8 @@ public class CsvFileTransactionParser implements TransactionParser {
 
     private List<Transaction> recalculateProvisionIfBelowMinimalValue(List<Transaction> transactions, BigDecimal tempTotalProvisionValue, int totalShares, ProvisionRate provisionRate) {
         if (calculatedProvisionIsBelowMinimalValue(tempTotalProvisionValue, provisionRate)) {
-            BigDecimal provisionValuePerShare = provisionRate.getMinimalProvision().divide(BigDecimal.valueOf(totalShares));
+            // DECISION rounding really to 10th place after decimal?
+            BigDecimal provisionValuePerShare = provisionRate.getMinimalProvision().divide(BigDecimal.valueOf(totalShares), 10, RoundingMode.HALF_UP);
             for (Transaction transaction : transactions) {
                 BigDecimal provisionForThisTransaction = calculateProvisionForTransactionWhenBelowMinimal(provisionValuePerShare, transaction);
                 transaction.setProvision(provisionForThisTransaction);
