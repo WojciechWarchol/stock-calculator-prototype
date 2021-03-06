@@ -47,12 +47,10 @@ public class StockPortoflio {
         PortfolioPerformance currentPortfolioPerformance = new PortfolioPerformance();
         GpwStockCalculator gpwStockCalculator = new GpwStockCalculator();
         for (Stock stock : stockList) {
-            if (!taxYears.contains(Year.of(stock.getLastTransactionDate().getYear()))) {
-                stockList.remove(stock);
-                break;
+            if (taxYears.contains(Year.of(stock.getLastTransactionDate().getYear()))) {
+                currentStockPerformance = gpwStockCalculator.calculate(stock, taxYears);
+                StockPerformancePrinter.printAbsolutePerformanceOfStock(stock, currentStockPerformance);
             }
-            currentStockPerformance = gpwStockCalculator.calculate(stock, taxYears);
-            StockPerformancePrinter.printAbsolutePerformanceOfStock(stock, currentStockPerformance);
         }
         currentPortfolioPerformance = gpwStockCalculator.calculatePortfolioPerformance(this,taxYears);
         StockPerformancePrinter.printPortfolioResult(currentPortfolioPerformance);
