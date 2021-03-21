@@ -96,7 +96,6 @@ public class GpwStockCalculator implements StockCalculator {
         stock.addPosition(closedPositions);
         stock.addPosition(openPosition);
 
-        // TODO Proper Calculating here - PRIORITY - For even easier calculations, I should consider - after initial sorting into positions - extracting a closed position from openPosition. This will make calculating in the next step EASY, together with extracting exact data for stock performance (clear sums for bought&sold, and bought&open) which will help in calculating % for stock and whole portfolio. Should also make it clear how to calc provisions. But this will make a closed and open position overlap. An alternative is to make a subtype of Open - Partially closed? Maybe positions should be subtypes?
         for (Position position : stock.getPositions()) {
             processPositionAndAddToStockPerformance(position);
         }
@@ -126,6 +125,8 @@ public class GpwStockCalculator implements StockCalculator {
         if (position.getTaxYear() != null && !taxYearsToCalculate.contains(position.getTaxYear())){
             return;
         }
+
+        //TODO - PRIORITY - Shift the resposibility of handing over the sum of bought&sold, bought&kept etc. share transactions to positions. This will simplify calculations here. Proper parse of IPO and PDA (proto). Portfolio % performance.
 
         BigDecimal purcheseSum = BigDecimal.ZERO;
         BigDecimal sellSum = BigDecimal.ZERO;
