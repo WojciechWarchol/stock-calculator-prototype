@@ -19,6 +19,7 @@ public class GpwStockCalculator implements StockCalculator {
     private Transaction previousTransaction;
     private StockPerformance currentStockPerformance;
     private List<Year> taxYearsToCalculate;
+    private boolean includeProvisionsFromUnsoldShares = false;
 
     // Temporary solution before these can be taken straight from Positions
     private BigDecimal totalPurchesedAndClosedValue = BigDecimal.ZERO;
@@ -88,6 +89,7 @@ public class GpwStockCalculator implements StockCalculator {
                 }
             }
         }
+//        closedPositions.add(openPosition.extractClosedTaxYearAsClosedPosition(taxYears.get(taxYears.size() - 1)));
         lackingPosition.getPositionState();
         // DECISION Adding positions, and than calculating on them is a bit sketchy
         stock.addPosition(lackingPosition);
@@ -166,10 +168,10 @@ public class GpwStockCalculator implements StockCalculator {
             BigDecimal stillOpenSum = BigDecimal.ZERO;
             for (ShareTransaction shareTransaction : boughtShareTransactions) {
                 stillOpenSum = stillOpenSum.add(shareTransaction.getPrice());
-                // DECISION calculate paid provisions now, or on position close? Some Kind of flag maybe?
-                paidProvisionSum = paidProvisionSum.add(shareTransaction.getProvision());
+                if (includeProvisionsFromUnsoldShares) {
+                    paidProvisionSum = paidProvisionSum.add(shareTransaction.getProvision());
+                }
             }
-            // TODO Create na "updates" method (though it might be redundant since there should be only one Open position, and there should always be recalculation
             paidProvisionSum = paidProvisionSum.setScale(2, RoundingMode.HALF_UP);
 
             currentStockPerformance.setOpenPositionValue(stillOpenSum);
